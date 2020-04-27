@@ -22,6 +22,7 @@ plot.problim<-function(
   pred.fill.col="white",  ##<< symbol fill colour for predictions of data, default= \code{'white'}
   pred.pl=NULL,      ##<< matrix of pre-calculated probability limits of predictions, with three columns the lower, middle and upper probability limits of the predicted data,  default is \code{NULL} see details
   pred.reps=NULL,    ##<< replicates of predictions in matrix form: \code{[ndata,nreps]} where \code{ndata} is the number of data points and \code{nreps} is the number of replicates
+  date=NULL,
   pl=c(0.90,0.50),  ##<< Specifies the probability limits to be calculated if \code{pred.reps} is input instead of \code{pred.pl}, default= \code{c(0.9,0.5)}, which provides the 90% and 50% probability limits
   pl.name="",     ##<< Name applied to probability limits, used in legend
   pl.fill=T,        ##<< flag specifying whether to fill probability limits with \code{pl.col}
@@ -39,8 +40,9 @@ plot.problim<-function(
   pl.bar=F,         ##<< Flag if \code{true}, it will plot barplots for probability limits, instead of lines and fill
   mask=NULL,        ##<< logical vector used to mask values of \code{obs and pred} from plot. Only values where \code{mask=FALSE} are plotted. Also see note below.
   mask.apply="obs",  ##<< character vector specifying what variables mask should apply to. Options include "obs" (default) and "pred" and in future releases, "pred.pl". 
-  x.axis.timestep="month",  ##<< If x is of class \code{\link{POSIXct}}, this provides the time step used for tickmarks on the  x axis, it is passed to the \code{by} arg for \code{\link{seq.Date}}, where axis is produced by the command: \code{axis.POSIXct(1, at=seq(min(x),max(x), by=x.axis.timestep), format=x.axis.format)}, see \code{\link{seq.Date}} and \code{\link{axis.POSIXct}} for options. Default = \code{"month"}
+  x.axis.timestep="daily",  ##<< If x is of class \code{\link{POSIXct}}, this provides the time step used for tickmarks on the  x axis, it is passed to the \code{by} arg for \code{\link{seq.Date}}, where axis is produced by the command: \code{axis.POSIXct(1, at=seq(min(x),max(x), by=x.axis.timestep), format=x.axis.format)}, see \code{\link{seq.Date}} and \code{\link{axis.POSIXct}} for options. Default = \code{"month"}
   x.axis.format='%Y/%m', ##<< If x is of class \code{\link{POSIXct}}, this provides the format for x-axis labels, see \code{x.axis.timestep} arg for further explanation, see \code{\link{strptime}} for further options
+  xtype="date",
    ...              ##<< additional arguments for plotting, see \code{\link{plot.default}} 
 ){
   # Define data for plot
@@ -66,11 +68,14 @@ plot.problim<-function(
   # Set-up plot
   if(switch.xy) {temp=xlim;xlim=ylim;ylim=temp;rm(temp)}
   if(!add) {plot(x,pred.pl[,1],type="n",ylim=ylim,xlim=xlim,xaxt="n",...)}
+  
   if(any(class(x)=="POSIXct")) {
     axis.POSIXct(1, at=seq(min(x),max(x), by=x.axis.timestep), format=x.axis.format)
-  } else {
+  } else if (xtype=="index"){
     axis(1)
-  }   
+  } else if (xtype=="date") {
+    axis(side=1,at=seq(from=1,to=length(obs),by=100),labels=date[seq(from=1,to=length(obs),by=100)])
+  }
   
   # Draw Probability Limits
   n=max(length(x),nrow(pred.pl))

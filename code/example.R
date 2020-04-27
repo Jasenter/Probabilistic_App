@@ -1,8 +1,8 @@
 ## Install 'gridExtra' package first else this won't work
 #time1 = Sys.time()
 ##################### TEST DATA #################################
-dirname = 'C:/Users/a1654087/Box/Task1_1_PrototypeSoftware/prototype/'
-#dirname = 'C:/Users/Console/Box/Task1_1_PrototypeSoftware/prototype/'
+#dirname = 'C:/Users/a1654087/Box/Task1_1_PrototypeSoftware/prototype/'
+dirname = 'C:/Users/Console/Box/Task1_1_PrototypeSoftware/prototype_20200225/'
 
 data_dirname = paste(dirname,'data/',sep='')
 

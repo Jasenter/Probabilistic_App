@@ -212,7 +212,11 @@ shinyServer(function(input, output, session) {
     input$yRange
     input$datRange
     vals$out$pred.pl
-    isolate({plot.problim(obs=vals$out$data$obs,pred=vals$out$data$pred,pred.pl=vals$out$pred.pl,xlim=input$datRange,ylim=input$yRange,add.indices=F,xlab='Time',ylab='Prediction',xaxs='i',yaxs='i')}) 
+    isolate({
+      plot.problim(obs=vals$out$data$obs,pred=vals$out$data$pred,pred.pl=vals$out$pred.pl,xlim=input$datRange,ylim=input$yRange,
+                   add.indices=F,xlab='Time',ylab='Prediction',xtype="date",date=vals$out$data$date)
+      #axis(side=1,at=seq(from=1,to=length(vals$out$data$obs),by=100),labels=vals$out$data$date[seq(from=1,to=length(vals$out$data$obs),by=100)])
+      }) 
   })
   incProgress(amount=0.3)
   

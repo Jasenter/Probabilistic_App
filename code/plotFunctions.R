@@ -55,16 +55,23 @@ boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
   
   # setting boxplot specifications
   ylim.max = max(sort(get(HRSlab)[[1]])[0.9*length(get(HRSlab)[[1]])],catchmentMetric)
-  
+  xrow = 0.41
+  txtoffset = (ylim.max)*0.05
+  par(mfrow=c(1,1),oma=c(0,0,0,0),mar=c(4,4,4,4))
   # Plotting
   boxplot.ext(xin=get(HRSlab), ylim=c(0,ylim.max),
-              colouring = boxColour,xaxt="n",ylab=c("Metric value"))
+              colouring = boxColour,xaxt="n",ylab=c(""))
 
   # Adding points
   points(x=1,y=catchmentMetric,col="red",pch=4,cex=2,lwd=2)
   legend(x="topleft",legend=c("data metrics","HRS metrics"),pch=c(4,NA),pt.lwd=c(2,NA),col=c("red",boxColour),pt.cex=c(2,NA),
          fill=c(NA,boxColour),border=c(NA,"black"))
   mtext(side=3,line=1,text=c(metric),cex=2,font=2)
+  mtext(side=2,line=3,font=2,cex=1.2, c("metric value"))
+  arrows(x0=xrow,x1=xrow,y0=0,y1=ylim.max,xpd=NA)
+  arrows(x0=xrow,x1=xrow,y0=ylim.max,y1=0,xpd=NA)
+  text(x=xrow,y=0-txtoffset,labels=c("better"),xpd=NA)
+  text(x=xrow,y=ylim.max+txtoffset,labels=c("worse"),xpd=NA)
   # legend(x="topright",legend=c(catchmentMetric))
 
 }
@@ -90,7 +97,11 @@ timeseries = function(data,pred.reps) {
 
     ylim.max = max(data$obs[start:end],sort(pred.reps[start:end,])[0.9*length(sort(pred.reps[start:end,]))],na.rm=T)
     plot.problim(obs=data$obs,pred.reps=pred.reps,xlab='Time',ylab='Prediction (mmd)',add.indices=F,
-                 xlim=c(start,end),ylim=c(0,ylim.max),x.axis.timestep="daily")
+                 xlim=c(start,end),ylim=c(0,ylim.max),xtype="date",date=data$date)
+
+    # axis(side=1,
+    #      at=c(start,((end-start)/3)+start,(((end-start)/3)*2)+start,end),
+    #      labels=c(data$date[start],data$date[((end-start)/3)+start],data$date[(((end-start)/3)*2)+start],data$date[end]))
     #lines(data$pred,col="black",lwd=2)
   }
 }
