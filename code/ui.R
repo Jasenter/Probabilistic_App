@@ -72,7 +72,9 @@ shinyUI(
                 br(),
                 #INPUT DATA                  
                 fluidRow(  
-                  column(5,radioButtons(inputId="dataSel",label="",choices=c("Use demo data","Load my own data"),selected="Use demo data",inline = TRUE)),
+                  column(5,radioButtons(inputId="dataSel",label="",choices=c("Use demo data","Load my own data"),selected="Use demo data",inline = TRUE))
+                  ),
+                fluidRow(
                   
                   #conditionalPanel(condition = "input.dataSel == 'Use demo data'", 
                   #                   column(2,selectInput("dataset","dataset",choices =c("B1 GR4J SLS"),selected="Gingera GR4J Log")) # Gingera GR4J Log
@@ -80,7 +82,12 @@ shinyUI(
                   conditionalPanel(condition = "input.dataSel == 'Load my own data'", 
                                    column(3,
                                           fileInput('file1',label=HTML("Load file (e.g. <a href='http://www.algorithmik.org.au/dat/demoData.csv'> demo data file </a>)"),
-                                                    accept=c('text/csv', 'text/comma-separated-values,text/plain','.csv'))))
+                                                    accept=c('text/csv', 'text/comma-separated-values,text/plain','.csv')), #,
+                                          textInput(inputId="lab.date",label="header of dates"),
+                                          textInput(inputId="lab.obs",label="header of observed data"),
+                                          textInput(inputId="lab.pred",label="header of predicted data"),
+                                          textInput(inputId="lab.unit",label="input units (e.g. mmd, m3/s, ML/d)"))
+                                   )
                 )
               ), #end of well panel              
               
@@ -98,6 +105,10 @@ shinyUI(
                          sliderInput("offset", "Transformation offset parameter [Dimensionless] (A*)",min = 0,max = 1e-0,value = 0.0001)),
                   column(2,selectInput(inputId="mean",label="mean parameter",choices=c("linear","constant","zero"),selected="zero")),
                   column(5,div(tableOutput("report"),style="font-size:120%"))
+                ),
+                
+                fluidRow(
+                 submitButton("Run simulation")
                 )
               ),
  #expression(paste("Standardised residuals   ",bold(nu^"std"),sep=" "))
@@ -112,7 +123,8 @@ shinyUI(
                     column(7,textOutput(outputId="error2")),
                     column(7,textOutput(outputId="error3")),
                     column(7,textOutput(outputId="error4")),
-                    column(7,textOutput(outputId="error5"))
+                    column(7,textOutput(outputId="error5")),
+                    column(7,textOutput(outputId="error6"))
                   )
               ),
  

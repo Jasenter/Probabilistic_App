@@ -49,9 +49,11 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
 
 ############################################################################
 
-calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meantype){
-  Qobs=data$obs
-  Qh=data$pred
+calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meantype,opt){
+  #browser()
+  
+  Qobs=data[[opt$obs]]
+  Qh=data[[opt$pred]]
 Qh_T = vector(length=length(Qh))
 
     eta = calc_eta(Qobs=Qobs,Qh=Qh,param=param,heteroModel=heteroModel) # obs - simulated

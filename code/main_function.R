@@ -35,6 +35,7 @@ probabilisticMod = function(data,opt) {
   source(paste(code_dirname,'output.R',sep=''))
   source(paste(code_dirname,'error_message.R',sep=''))
   
+  
   #data = list(obs,sim)
   #names(data) = c("obs","pred")
   #browser()
@@ -45,12 +46,10 @@ probabilisticMod = function(data,opt) {
   
   paramFix = list(A=opt$A,lambda=opt$lambda)
   meantype = opt$meantype
-  data$obs[data$obs==-9999] = NA
-  data$pred[data$pred==-9999] = NA
-  #calc_mu0 = T # calculate intercept of mu
-  #calc_mu1 = T # calculate slope of mu
+  data[[opt$obs]][data[[opt$obs]]==-9999] = NA
+  data[[opt$pred]][data[[opt$pred]]==-9999] = NA
+
   calc_rho = T # Always calculate Rho
-  
   
   ######################################
   ## Error checks on the observed data
@@ -85,59 +84,59 @@ probabilisticMod = function(data,opt) {
 
   ######################################
   
-  
-  # calc parameters
-  param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype)
-  
-  # calc eta_star
-  std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel)
 
+  # calc parameters
+  param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype,opt=opt)
+ 
+  # calc eta_star
+  std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel,opt=opt)
+  
   # calc pred reps
-  pred.reps = calc_pred_reps(Qh=data$pred,heteroModel=heteroModel,param=param,nReps=reps,Qmin=0.,Qmax=999.,truncType='spike')
+  pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=reps,Qmin=0.,Qmax=999.,truncType='spike')
 
   # print replicates
   
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
-  #write.csv(pred.pl,file=paste(title,"_PL.csv",sep=""))
-  #write.csv(x=pred.reps,file=paste(title,"_PredReps.csv",sep=""))
-
+  write.csv(pred.pl,file=paste(title,"_PL.csv",sep=""))
+  write.csv(x=pred.reps,file=paste(title,"_PredReps.csv",sep=""))
+ 
  # generating metrics (reliability, precision, bias)
-   metrics = calc_metrics(data=data,pred.reps=pred.reps)
+   metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
 
 
 #pdf.options(title="Probabilistic predictions")
    pdf(paste(title,"_Summary.pdf",sep=""))
 # 
    # Printing first page
-   frontpage(inputName=opt$inputName,param=param,metrics=metrics)
+   #frontpage(inputName=opt$inputName,param=param,metrics=metrics)
    # Printing second page (errors)
    
    #msg.print=error.print(data)
-   error.write(data=data,is.data=T)
-
+   #error.write(data=data,is.data=T)
+  
   # Boxplots
    boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$reliability,metric="reliability",boxColour="pink")
    boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$sharpness,metric="sharpness",boxColour="white")
    boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$bias,metric="bias",boxColour="lightblue")
    # 
-   plot.performance(data=data,pred.reps=pred.reps,type='PQQ')
+   plot.performance(data=data,pred.reps=pred.reps,type='PQQ',opt=opt)
    # 
-   plot.residuals(data=data,std.resids=std.resids,type='pred')
+   plot.residuals(data=data,std.resids=std.resids,type='pred',opt=opt)
    #
-   plot.residuals(data=data,std.resids=std.resids,type='prob(pred)')
+   plot.residuals(data=data,std.resids=std.resids,type='prob(pred)',opt=opt)
    # 
-   plot.residuals(data=data,std.resids=std.resids,type='density')
+   plot.residuals(data=data,std.resids=std.resids,type='density',opt=opt)
    #
-   tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T)
+   tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt)
    #
-
-   if (!is.na(min(data$obs)) && !is.na(min(data$pred))) {
+   
+   if (!is.na(min(data[[opt$obs]])) && !is.na(min(data[[opt$pred]]))) {
    #if (msg.print[5] == "No issues found! ") { # Only print these if there's no missing data
-     acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel)
-     acfplotter(data=data,acfType='pacf',param=param,heteroModel=heteroModel)
+     acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel,opt=opt)
+     acfplotter(data=data,acfType='pacf',param=param,heteroModel=heteroModel,opt=opt)
    }
    # Timeseries
-   timeseries(data=data,pred.reps=pred.reps)
+   timeseries(data=data,pred.reps=pred.reps,opt=opt)
    #
 
   

@@ -5,27 +5,35 @@ shinyServer(function(input, output, session) {
   vals=reactiveValues(
     sim=NULL # for storing the simulation
   )
-
-  observe({
-    x=input$dataSel  # update when checkbox is clicked
-
-    if(x=='Upload my own data') {
-      inFileObs <- input$file1
-      print(inFileObs$datapath)
-      if (!is.null(inFileObs)){
-        data=as.data.frame(read.csv(inFileObs$datapath, header=TRUE))
-      }
-      maxR=ceiling(max(data$obs,na.rm=TRUE))
-      updateSliderInput(session,"yRange",label= "Y range",value = c(0,50),step=5,min=0,max=maxR)
-      maxL=length(data$obs)
-      updateSliderInput(session,"datRange",label= "X range",value = c(0,365),step=5,min=0,max=maxL)
-    }
-
-  })
+# 
+#   observe({
+#     x=input$dataSel  # update when checkbox is click
+#     print(paste("datasel is ",x))
+#     print(paste("file is ",input$file1))
+#     if(x=='Load my own data') {
+#       inFileObs <- input$file1
+# 
+#       print(paste("infileobs is ",inFileObs))
+# 
+#       if (!is.null(inFileObs)){
+#         data=as.data.frame(read.csv(inFileObs$datapath, header=TRUE))
+#       }
+# 
+#       maxR=ceiling(max(data$obs,na.rm=TRUE))
+#       updateSliderInput(session,"yRange",label= "Y range",value = c(0,50),step=5,min=0,max=maxR)
+#       maxL=length(data$obs)
+#       updateSliderInput(session,"datRange",label= "X range",value = c(0,365),step=5,min=0,max=maxL)
+#     }
+# 
+#   })
   
   
-  observeEvent({input$dataset
+  observeEvent({#input$dataset
                input$file1
+               input$lab.date
+               input$lab.obs
+               input$lab.pred
+               input$lab.unit
                input$lambda
                input$offset
                input$model
@@ -37,7 +45,7 @@ shinyServer(function(input, output, session) {
     ###UPDATE INFO FROM FORM##
     ##########################
     if(input$offset>0){Astar=10^-(8-input$offset)}else{Astar=0}
-    dataset=input$dataset     #dataset should be used to select which dataset - for now just B9 is available
+    #dataset=input$dataset     #dataset should be used to select which dataset - for now just B9 is available
    
     RData_fname=input$model   
     print(input$model)
@@ -45,7 +53,7 @@ shinyServer(function(input, output, session) {
     if (RData_fname == "Bethany (Barossa)") {load(paste(data_dirname,"data.BethanyCurrent.RData",sep=""))}
     if (RData_fname == "Yackandandah Creek (VIC)") {data = read.csv(paste(data_dirname,"402204_SLS.csv",sep=""),as.is=T)}
     # if (RData_fname == "data.A10_HBV_BC0.2_A0.RData") {load(paste(data_dirname,RData_fname,sep=""))}
-    if (RData_fname == "Biggara (SA)") {data = read.csv(paste(data_dirname,"Biggara_GR4J_Log_A0.csv",sep=""),as.is=T)}
+    if (RData_fname == "Biggara (ACT)") {data = read.csv(paste(data_dirname,"Biggara_GR4J_Log_A0.csv",sep=""),as.is=T)}
     #if (RData_fname == "Gingera (SA)") {load(paste(data_dirname,"Gingera_GR4J_Log_A0.RData",sep=""))}
     if (RData_fname == "Lower Tanunda (Barossa)") {data = read.csv(paste(data_dirname,"Barossa_lowerTanunda_1993.csv",sep=""),as.is=T)}
     #if (RData_fname == "Lower Flaxman (Barossa)") {data = read.csv(paste(data_dirname,"Barossa_lowerFlaxman_trunc.csv",sep=""),as.is=T)}
@@ -55,12 +63,14 @@ shinyServer(function(input, output, session) {
     #if(heteroModel == "Box Cox"){heteroModel="BC"}
     
     meantype=input$mean
-     
-    meanObs=mean(data$obs,na.rm=TRUE) 
     
     lambda=as.numeric(input$lambda)
     
-    A=Astar*meanObs
+    # print(data.lab$obs)
+    # maxR=ceiling(max(data[[data.lab$obs]],na.rm=TRUE))
+    # updateSliderInput(session,"yRange",label= "Y range",value = c(0,50),step=5,min=0,max=maxR)
+    # maxL=length(data[[data.lab$obs]])
+    # updateSliderInput(session,"datRange",label= "X range",value = c(0,365),step=5,min=0,max=maxL)
     
     # perfPlot=input$perfPlot
     # resPlot=input$resPlot
@@ -68,23 +78,49 @@ shinyServer(function(input, output, session) {
     # datRange=input$datRange  # has 2 values (vector)
     # yRange=input$yRange      # has 2 values (vector)
     
-    # SET ERROR MODEL PARAMETERS
-    paramFix = list(A=A,lambda=lambda)
-    
     #READ FILES
     inFileObs <- input$file1
     if (!is.null(inFileObs)){
       # return(NULL)
       data=as.data.frame(read.csv(inFileObs$datapath, header=TRUE))
-    }
 
+      if(input$lab.obs=="") {
+        print("we're all NA here")
+        return()
+      } else {
+        print(paste("datetime is ",input$lab.date))
+        print(paste("obs is ",input$lab.obs))
+        print(paste("pred is ",input$lab.pred))
+        print(paste("unit is ",input$lab.unit))
+        data.lab = list(obs=input$lab.obs,pred=input$lab.pred,date=input$lab.date,unit=input$lab.unit)
+        print(data.lab)
+      }
+      
+      # if(input$lab.obs!="" & input$lab.pred!="" & input$lab.date!="") {
+      # 
+      # } else {
+      #   data.lab = list(obs="obs",pred="pred",date="date")
+      #   #print("WARNING! no header inputs recieved - defaults set to dates = 'date', observed data = 'obs', predicted data = 'pred'")
+      # }
+    } else {
+      data.lab = list(obs="obs",pred="pred",date="date",unit="mmd") 
+      print(data.lab)
+    }
+ 
 ######################################
     
 ## Replacing error code data (-9999) with NA
     
-    data$obs[data$obs==-9999] = NA
-    data$pred[data$pred==-9999] = NA
+    data[[data.lab$obs]][data[[data.lab$obs]]<0] = NA # setting all negative flows to NA (asu)
+    data[[data.lab$pred]][data[[data.lab$pred]]<0] = NA
     
+    # data[[data.lab$obs]][data[[data.lab$obs]]==-9999] = NA
+    # data[[data.lab$pred]][data[[data.lab$pred]]==-9999] = NA
+    
+    meanObs=mean(data[[data.lab$obs]],na.rm=TRUE)
+    A=Astar*meanObs
+    # SET ERROR MODEL PARAMETERS
+    paramFix = list(A=A,lambda=lambda)
 ## Error checks on the observed data
     # msg.print = vector(length=3)
     # msg.print = rep("NA",3)
@@ -110,20 +146,20 @@ shinyServer(function(input, output, session) {
     isolate({
       withProgress(message="Calculating residuals...",value=0, {
       # calibrate remaining parameters (sigma here)
-      param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype)
+      param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype,opt=data.lab)
       incProgress(amount=0.2)
       
-      std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel)
+      std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel,opt=data.lab)
       
       # calc pred reps
-      pred.reps = calc_pred_reps(Qh=data$pred,heteroModel=heteroModel,param=param,nReps=1e2,Qmin=0.,Qmax=999.,truncType='spike')
+      pred.reps = calc_pred_reps(Qh=data[[data.lab$pred]],heteroModel=heteroModel,param=param,nReps=1e2,Qmin=0.,Qmax=999.,truncType='spike')
       incProgress(amount=0.4)
       #calc pred pls
       pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
       updateSliderInput(session,"yRange",label= "Y range",value = c(0,ceiling(max(pred.pl,na.rm=TRUE))),step=5,min=0,max=ceiling(max(pred.pl,na.rm=TRUE)))
       incProgress(amount=0.6)
       #calculate Metrics
-      metrics = calc_metrics(data=data,pred.reps=pred.reps)
+      metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=data.lab)
       metrics=as.data.frame(metrics)
       incProgress(amount=0.8)
       #REPORTING INFO
@@ -145,11 +181,13 @@ shinyServer(function(input, output, session) {
                       paste("Mean intercept (alpha)",sep=""), # estimated intercept
                       paste("Mean slope (beta)",sep="")) # estimated slope
       incProgress(amount=1.0)
+      print('code complete!')
        })
       })
     
    #STORE PARS, PRED AND RESIDS 
-    out=list(pred.reps=pred.reps,pred.pl=pred.pl,std.resids=std.resids,param=param,metrics=metrics,data=data,meanObs=meanObs,report=report,heteroModel=heteroModel) #resPlot=resPlot,perfPlot=perfPlot,datRange=datRange,yRange=yRange,
+
+    out=list(pred.reps=pred.reps,pred.pl=pred.pl,std.resids=std.resids,param=param,metrics=metrics,data=data,meanObs=meanObs,report=report,heteroModel=heteroModel,data.lab=data.lab) #resPlot=resPlot,perfPlot=perfPlot,datRange=datRange,yRange=yRange,
     vals$out=out # save
 
   })
@@ -158,24 +196,24 @@ shinyServer(function(input, output, session) {
   output$dlPL <- downloadHandler(filename=function(){paste(input$model,"ProbLimits",".csv",sep="")},content=function(file){write.csv(vals$out$pred.pl,file)})
   output$dlSummary <- downloadHandler(filename=function(){paste(input$model,"Summary",".pdf",sep="")},content=function(file){
      pdf(file=file)
-     frontpage(inputName=input$model,param=vals$out$param,metrics=vals$out$metrics)
+     #frontpage(inputName=input$model,param=vals$out$param,metrics=vals$out$metrics)
      #msg.print=error.print(vals$out$data)
-     error.write(data=vals$out$data,is.data=T)
+     #error.write(data=vals$out$data,is.data=T)
      boxplotter(data_dirname=data_dirname,catchmentMetric=vals$out$metrics[[1]],metric="reliability",boxColour="pink")
      boxplotter(data_dirname=data_dirname,catchmentMetric=vals$out$metrics[[2]],metric="sharpness",boxColour="white")
      boxplotter(data_dirname=data_dirname,catchmentMetric=vals$out$metrics[[3]],metric="bias",boxColour="lightblue")
-     plot.performance(data=vals$out$data,pred.reps=vals$out$pred.reps,type='PQQ')
-     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='pred')
-     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='prob(pred)')
-     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='density')
-     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='tranz')
-     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='extratranz')
+     plot.performance(data=vals$out$data,pred.reps=vals$out$pred.reps,type='PQQ',opt=vals$out$data.lab)
+     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='pred',opt=vals$out$data.lab)
+     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='prob(pred)',opt=vals$out$data.lab)
+     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='density',opt=vals$out$data.lab)
+     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='tranz',opt=vals$out$data.lab)
+     plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='extratranz',opt=vals$out$data.lab)
     # 
-     if (!is.na(min(vals$out$data$obs)) && !is.na(min(vals$out$data$pred))) { # Only print these if there's no missing data
-       plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='acf')
-       plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='pacf')
+     if (!is.na(min(vals$out$data[[data.lab$obs]])) && !is.na(min(vals$out$data[[data.lab$pred]]))) { # Only print these if there's no missing data
+       plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='acf',opt=vals$out$data.lab)
+       plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,model=vals$out$heteroModel,param=vals$out$param,type='pacf',opt=vals$out$data.lab)
      }
-     timeseries(data=vals$out$data,pred.reps=vals$out$pred.reps)
+     timeseries(data=vals$out$data,pred.reps=vals$out$pred.reps,opt=vals$out$data.lab)
     #
     dev.off()},contentType="application/pdf")
 
@@ -186,23 +224,25 @@ shinyServer(function(input, output, session) {
    output$report <- renderTable({
      vals$out$report  #table of parameters
    },align='c',width="500",digits=3)
-
-  output$error1 <- renderText({      
-    msg.print = error.print(data=vals$out$data)
+  output$error1 <- renderText({ 
+    msg.print = error.print(data=vals$out$data,opt=vals$out$data.lab)
  #   if(msg.print[1]!= "No issues found!"){tags$head(tags$style(paste("Zero flow check. ",msg.print[1],sep=""){"color: red"}))}})
     paste("Zero flow check. ",msg.print[1],sep="")})
   output$error2 <-renderText({
-    msg.print = error.print(data=vals$out$data)
+    msg.print = error.print(data=vals$out$data,opt=vals$out$data.lab)
     paste("Time-series length check. ",msg.print[2],sep="")})
   output$error3 <-renderText({
-    msg.print = error.print(data=vals$out$data)
+    msg.print = error.print(data=vals$out$data,opt=vals$out$data.lab)
     paste("Significant data points check. ",msg.print[3],sep="")})
   output$error4 <-renderText({
-    msg.print = error.print(data=vals$out$data)
+    msg.print = error.print(data=vals$out$data,opt=vals$out$data.lab)
     paste("Gaps in data check. ",msg.print[4],sep="")})
   output$error5 <-renderText({
-    msg.print = error.print(data=vals$out$data)
+    msg.print = error.print(data=vals$out$data,opt=vals$out$data.lab)
     paste("Missing data check. ",msg.print[5],sep="")})
+  output$error6 <-renderText({
+    msg.print = error.print(data=vals$out$data,opt=vals$out$data.lab)
+    paste("Streamflow units check. ",msg.print[6],sep="")})
   incProgress(amount=0.15)
   
   output$TS <- renderPlot({
@@ -213,8 +253,8 @@ shinyServer(function(input, output, session) {
     input$datRange
     vals$out$pred.pl
     isolate({
-      plot.problim(obs=vals$out$data$obs,pred=vals$out$data$pred,pred.pl=vals$out$pred.pl,xlim=input$datRange,ylim=input$yRange,
-                   add.indices=F,xlab='Time',ylab='Prediction',xtype="date",date=vals$out$data$date)
+      plot.problim(obs=vals$out$data[[vals$out$data.lab$obs]],pred=vals$out$data[[vals$out$data.lab$pred]],pred.pl=vals$out$pred.pl,xlim=input$datRange,ylim=input$yRange,
+                   add.indices=F,xlab='Time',ylab=paste('Prediction (',vals$out$data.lab$unit,")",sep=""),xtype="date",date=vals$out$data[[vals$out$data.lab$date]])
       #axis(side=1,at=seq(from=1,to=length(vals$out$data$obs),by=100),labels=vals$out$data$date[seq(from=1,to=length(vals$out$data$obs),by=100)])
       }) 
   })
@@ -228,13 +268,13 @@ shinyServer(function(input, output, session) {
       if(input$resPlot == "Transformed residuals with moving statistics"){pType ='extratranz'} #link up to select perf plot styles   
       if(input$resPlot == "Autocorrelation plot of the residual innovations") {pType = 'acf'}
       if(input$resPlot == "Partial-autocorrelation plot of the residual innovations") {pType = 'pacf'}
-      plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,type=pType,model=vals$out$heteroModel,param=vals$out$param) 
+      plot.residuals(data=vals$out$data,std.resids=vals$out$std.resids,type=pType,model=vals$out$heteroModel,param=vals$out$param,opt=vals$out$data.lab) 
     })
     incProgress(amount=0.45)
     
     output$perf <- renderPlot({
       if(input$perfPlot == "Predictive QQ plot"){pType ='PQQ'} #link up to select perf plot styles
-      plot.performance(data=vals$out$data,pred.reps=vals$out$pred.reps,type=pType) #good
+      plot.performance(data=vals$out$data,pred.reps=vals$out$pred.reps,type=pType,opt=vals$out$data.lab) #good
     })
     incProgress(amount=0.6)
     

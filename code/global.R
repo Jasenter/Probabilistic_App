@@ -28,7 +28,7 @@ source('error_message.R')
 
 #dirname = 'C:/Users/a1039419/Box/1_Projects/2019_DEW_SourceModelling_RPackage/3_Tasks/Task1_1_PrototypeSoftware/prototype/' # Mark Thyer PC
 #dirname = 'C:/Users/a1065639/Box Sync/2019_DEW_SourceModelling_RPackage/3_Tasks/Task1_1_PrototypeSoftware/prototype/' # David McInerney PC
-dirname = 'C:/Users/Console/Box/Task1_1_PrototypeSoftware/prototype_20200225/' # Jason home pc
+dirname = 'C:/Users/Console/Box/Task1_1_PrototypeSoftware/Probabilistic_App/' # Jason home pc
 #dirname = "C:/Users/a1654087/Box/Task1_1_PrototypeSoftware/prototype_20200225/" # Jason work pc
 
 data_dirname = paste(dirname,'data/',sep='')

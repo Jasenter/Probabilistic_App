@@ -7,9 +7,9 @@ calc_eta = function(Qobs,Qh,param,heteroModel){
 
 ############################################################################
 
-calc_std_resids = function(data,param,heteroModel){
-  Qobs = data$obs
-  Qh = data$pred
+calc_std_resids = function(data,param,heteroModel,opt){
+  Qobs = data[[opt$obs]]
+  Qh = data[[opt$pred]]
   n=length(Qobs)
   eta = calc_eta(Qobs,Qh,param,heteroModel)
   mu0 = param$mean_eta_0
@@ -23,9 +23,9 @@ calc_std_resids = function(data,param,heteroModel){
 
 ############################################################################
 
-calc_innovations = function(data,param,heteroModel){
-  Qobs = data$obs
-  Qh = data$pred
+calc_innovations = function(data,param,heteroModel,opt){
+  Qobs = data[[opt$obs]]
+  Qh = data[[opt$pred]]
   n=length(Qobs)
   y = vector(length=n)
   eta = vector(length=n)
