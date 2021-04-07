@@ -1,3 +1,33 @@
+
+
+############################################################################
+
+calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meantype,opt){
+  #browser()
+
+  Qobs=data[[opt$obs]]
+  Qh=data[[opt$pred]]
+  Qh_T = vector(length=length(Qh))
+
+  eta = calc_eta(Qobs=Qobs,Qh=Qh,param=param,heteroModel=heteroModel) # obs - simulated
+  Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
+
+  if (method=='MoM'){
+    p = AR1_MoM(eta=eta,Qh=Qh_T,calc_rho=calc_rho,meantype)
+    param$mean_eta_0 = p$mu0
+    param$mean_eta_1 = p$mu1
+    param$rho = p$rho
+    param$sigma_y = p$sigma
+    param$mean_eta = p$mu
+
+  } else {
+    print("Invalid method selected - use MoM only")
+    browser()
+  }
+  return(param)
+}
+
+
 ############################################################################
 
 AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
@@ -18,7 +48,7 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
     mu1 = 0.
     print("WARNING: unrecognised mean parameter type provided - zero mean used.")
   }
-    
+
   n = length(eta)
   mu = mu0+mu1*Qh
   eta.star = eta-mu
@@ -30,12 +60,12 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
   if (calc_rho){
 #    rho = (Nt_corr+1)/(Nt_corr-4)*(1/Nt_corr)*(1/s^2)*sum(corr_term,na.rm=T)
 #    rho = cor(eta[2:Nt],eta[1:(Nt-1)])
-    
+
     ErrorlagForward <- eta.star[2:n]
     ErrorlagBackward <- eta.star[1:n-1]
     sb = sqrt((sum((ErrorlagBackward)^2,na.rm=T))/n)
     sf = sqrt((sum((ErrorlagForward)^2,na.rm=T))/n)
-    
+
     rho = (sum((ErrorlagForward)*(ErrorlagBackward),na.rm=T))/((n-1)*sb*sf)
 
   } else {
@@ -47,31 +77,5 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
   return(list(mu0=mu0,mu1=mu1,rho=rho,sigma=sigma,mu=mu))
 }
 
-############################################################################
-
-calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meantype,opt){
-  #browser()
-  
-  Qobs=data[[opt$obs]]
-  Qh=data[[opt$pred]]
-Qh_T = vector(length=length(Qh))
-
-    eta = calc_eta(Qobs=Qobs,Qh=Qh,param=param,heteroModel=heteroModel) # obs - simulated
-    Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
-
-  if (method=='MoM'){
-    p = AR1_MoM(eta=eta,Qh=Qh_T,calc_rho=calc_rho,meantype)
-    param$mean_eta_0 = p$mu0
-    param$mean_eta_1 = p$mu1
-    param$rho = p$rho
-    param$sigma_y = p$sigma
-    param$mean_eta = p$mu
-
-  } else {
-    print("Invalid method selected - use MoM only")
-    browser()
-  }
-  return(param)
-}
 
 ############################################################################

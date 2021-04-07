@@ -48,8 +48,9 @@ plot.residuals = function(data,std.resids,type,model,param,opt,xlab=NULL,ylab=NU
 
 boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
   #
+
   ## Opening Robject with HRS metrics
-  RData_fname = paste(data_dirname,metric,'.RData',sep='')
+  RData_fname = paste(data_dirname,"/",metric,'.RData',sep='')
   load(RData_fname)
   HRSlab = paste("HRS",metric,sep="")
 
@@ -68,10 +69,11 @@ boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
          fill=c(NA,boxColour),border=c(NA,"black"))
   mtext(side=3,line=1,text=c(metric),cex=2,font=2)
   mtext(side=2,line=3,font=2,cex=1.2, c("metric value"))
-  arrows(x0=xrow,x1=xrow,y0=0,y1=ylim.max,xpd=NA)
-  arrows(x0=xrow,x1=xrow,y0=ylim.max,y1=0,xpd=NA)
-  text(x=xrow,y=0-txtoffset,labels=c("better"),xpd=NA)
-  text(x=xrow,y=ylim.max+txtoffset,labels=c("worse"),xpd=NA)
+  axis(side=4,at=c(0.0,ylim.max),labels=c("better","worse"),las=2)
+  #arrows(x0=xrow,x1=xrow,y0=0,y1=ylim.max,xpd=NA)
+  #arrows(x0=xrow,x1=xrow,y0=ylim.max,y1=0,xpd=NA)
+  #text(x=xrow,y=0-txtoffset,labels=c("better"),xpd=NA)
+  #text(x=xrow,y=ylim.max+txtoffset,labels=c("worse"),xpd=NA)
   # legend(x="topright",legend=c(catchmentMetric))
 
 }
@@ -96,13 +98,14 @@ timeseries = function(data,pred.reps,opt) {
     }
 
     ylim.max = max(data[[opt$obs]][start:end],sort(pred.reps[start:end,])[0.9*length(sort(pred.reps[start:end,]))],na.rm=T)
-    plot.problim(obs=data[[opt$obs]],pred.reps=pred.reps,xlab='Time',ylab=paste('Prediction (',opt$unit,')',sep=""),add.indices=F,
-                 xlim=c(start,end),ylim=c(0,ylim.max),xtype="date",date=data[[opt$date]])
+    plot.problim(obs=data[[opt$obs]],pred.reps=pred.reps,xlab='Time',ylab='Prediction (mmd)',add.indices=F,
+                 xlim=c(start,end),ylim=c(0,ylim.max),xtype="date",date=data[[opt$date]],
+                 pred=opt$pred,pred.lty=1,pred.lwd=2,pred.col="black",pred.name="Predicted")
 
     # axis(side=1,
     #      at=c(start,((end-start)/3)+start,(((end-start)/3)*2)+start,end),
     #      labels=c(data$date[start],data$date[((end-start)/3)+start],data$date[(((end-start)/3)*2)+start],data$date[end]))
-    #lines(data$pred,col="black",lwd=2)
+    lines(data$pred,col="black",lwd=2)
   }
 }
 ############################################################################

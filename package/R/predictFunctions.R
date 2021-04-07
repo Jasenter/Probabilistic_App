@@ -156,6 +156,7 @@ calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,trunc
     }
 
     if (nReps==1){predReps=predReps[,1]}
+  colnames(predReps)=paste("rep",seq(1:nReps),sep="")
     return(predReps)
 }
 

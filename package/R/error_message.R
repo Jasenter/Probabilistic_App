@@ -1,3 +1,51 @@
+#' Error message repository
+#'
+#' For internal use with the shiny app only. By J Hunter & Team.
+#' @param flag  # indicates which error is being called
+#' @keywords none
+#' @export
+#' @examples
+#' none          ## no example - this script is not for the user; it is for the webapp - and webapps need no examples
+
+
+################################
+## Data check error messages
+
+xerr = function(flag) {
+
+  if(flag==1) {
+
+    xerror = "Fatal error: Data not found under the headers provided - please check the headers are correct (case sensitive) and try again."
+    print(xerror)
+    showNotification(xerror)
+
+  } else if(flag==2) {
+
+    xerror = "Fatal error: One or more of the input vectors (e.g. observed or simulated flow or dates) contains no data."
+    print(xerror)
+    showNotification(xerror)
+
+  } else if(flag==3) {
+
+    xerror = "Fatal error: One or more of the input vectors (e.g. observed or simulated flow or dates) contains data of the wrong type - dates must be characters and flows must be numeric."
+    print(xerror)
+    showNotification(xerror)
+
+  } else if(flag==4) {
+
+    xerror = "Fatal error: Observed and simulated data are the same vector."
+    print(xerror)
+    showNotification(xerror)
+
+  } else if(flag==5) {
+
+    xerror = "Fatal error: Observed and simulated flows and / or the corresponding dates are different lengths."
+  }
+
+}
+#################################
+
+#################################
 error = function(msgFlag,num=NA) {
 
 
@@ -6,7 +54,7 @@ error = function(msgFlag,num=NA) {
       msg.print.error = paste("WARNING:", round(num), "% of the observed streamflow are zero flows.",
                               "Predictions may be of low quality.",
                                  "Please see Mcinerney et al. 2019 for details.",
-                                 sep="\n")
+                                 sep=" ")
 
 # Very short time series, or lots of missing data (<300 data points total)
   } else if (msgFlag==2) {
@@ -35,7 +83,7 @@ error = function(msgFlag,num=NA) {
 
   }  else if (msgFlag==6) {
     msg.print.error = paste("WARNING: Streamflow units are not recognised.",
-                            "  mmd, m3s or MLd are recommended.",
+                            "  mm/d, m3/s or ML/d are recommended.",
                             "  Units assumed to be millimetres per day (mmd).",
                             sep="\n")
 }
@@ -46,9 +94,8 @@ error = function(msgFlag,num=NA) {
 # Suite of tests on the data's suitability for predicting
 
 error.print = function(data,opt) {
-  #print("open error")
   msg.print = vector(length=6)
-  msg.print = rep("No issues found!",6)
+  msg.out = rep("No issues found!",6)
   maxL=sum(data[[opt$obs]] >= 0, na.rm=TRUE) #number of all counted flows
   zeroL = sum(data[[opt$obs]] <=0,na.rm=TRUE) # number of zero flows
   naL = sum(is.na(data[[opt$obs]]))
@@ -57,53 +104,56 @@ error.print = function(data,opt) {
   if(!is.na(min(bool.na))) {max.gap = 0
   } else {  max.gap = max(with(rle(bool.na), lengths[-c(1,length(lengths))][!values[-c(1,length(values))]]))
   }
-  #print("it gets to here")
-  # Test for too many zero flows
+# Test for too many zero flows
   fracZero = zeroL/maxL
+  msgFlag=1
   if ((fracZero) > 0.05) {
-    msgFlag=1
-    msg.print[msgFlag] = error(msgFlag=msgFlag,num=(fracZero*100))
+    msg.out[msgFlag] = error(msgFlag=msgFlag,num=(fracZero*100))
   }
-  # Test for too many missing datapoints
+  msg.print[msgFlag] = paste("Zero flow check. ",msg.out[msgFlag],sep="")
+
+# Test for length of time series
+  msgFlag = 2
   if (maxL <= 300) {
-    msgFlag = 2
-    msg.print[msgFlag] = error(msgFlag=msgFlag)
+    msg.out[msgFlag] = error(msgFlag=msgFlag)
   }
-  # Test for influential points
+  msg.print[msgFlag] = paste("Time-series length check. ",msg.out[msgFlag],sep="")
 
-  # Test for large gaps in data
-  if (max.gap >= (0.05*allL)) {
-    msgFlag = 4
-    msg.print[msgFlag] = error(msgFlag=msgFlag)
-  }
+# Test for influential points
+  msgFlag = 3
+  msg.print[msgFlag] = paste("Significant data points check. ",msg.out[msgFlag],sep="")
 
-  # Count for number of missing data
+# Test for large gaps in data
+  # msgFlag = 4
+  # if (max.gap >= (0.05*allL)) {
+  #   msg.out[msgFlag] = error(msgFlag=msgFlag)
+  # }
+  # msg.print[msgFlag] = paste("Gaps in data check. ",msg.out[msgFlag],sep="")
+
+# Count for number of missing data
+  msgFlag = 5
   if (naL > 0) {
-    msgFlag = 5
-    msg.print[msgFlag] = error(msgFlag=msgFlag,num=naL)
+    msg.out[msgFlag] = error(msgFlag=msgFlag,num=naL)
   }
+  msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
 
-  # test for recognisable streamflow units
+# test for recognisable streamflow units
   x=opt$unit
   xCount=0
   #print(paste("default unit is ",x,sep=" "))
-  if(is.null(x)) {
-    print(paste("no units provided - default to mmd"))
-  } else {
-    print(paste("units set to ",x,sep=""))
-
-    viable.units = c("mmd","mm/d","m3s","m3/s","MLd","ML/d") # check for viable units
-    for(i in 1:length(viable.units)) {
-      if(x==viable.units[i]) {xCount=xCount+1}
-    }
+  viable.units = c("mmd","mm/d","m3s","m3/s","MLd","ML/d")
+  for(i in 1:length(viable.units)) {
+    if(x==viable.units[i]) {xCount=xCount+1}
   }
-
+  msgFlag = 6
   if(xCount<0.1) {
-    msgFlag = 6
-    msg.print[msgFlag] = error(msgFlag=msgFlag)
+    msg.out[msgFlag] = error(msgFlag=msgFlag)
   }
+  msg.print[msgFlag] = paste("Streamflow units check. ",msg.out[msgFlag],sep="")
 
   return(msg.print)
 }
 
 ####################
+
+
