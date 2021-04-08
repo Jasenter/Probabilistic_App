@@ -62,7 +62,7 @@ shinyUI(
                       #helpText("The web-app assumes a least-squares objective function, e.g. the sum-of-squared-errors (SSE) or equivalent Nash-Sutcliffe efficiency (NSE), computed from Box-Cox transformed flows (McInerney et al, 2017)."),
                       #helpText("These include widely used objective functions such as the NSE (lambda=1, A*=0), the NSE on square-root transformed flows (lambda=0.5, A*=0) and the NSE on log-transformed flows (lambda=0, A*=0). "),
                       helpText(h3("Demonstration data")),
-                      helpText("By default, loading up the web-app for the first time will display probabilistic streamflow predictions for the Yackandandah Creek catchment (Australia), obtained from the GR4J rainfall-runoff model pre-calibrated to the NSE objective function."),
+                      helpText("By default, loading up the web-app for the first time will display probabilistic streamflow predictions for the Yackandandah Creek catchment (Australia), obtained from the GR4J rainfall-runoff model and pre-calibrated to the NSE objective function in one version, and the NSE-BC02 objective function in the other."),
                       helpText(h3("Uploading your own data")),
                       helpText("To upload your own data, create a CSV file with three columns corresponding to the daily timestep in format (DD/MM/YYYY), observed data and simulated data."),
                       #helpText(HTML("Download the demo data file to see the required format: <a href='http://www.algorithmik.org.au/dat/demoData.csv'> demo data file </a>.")),
@@ -102,8 +102,9 @@ shinyUI(
                   column(4,helpText(h3("Input Data"))),
                   conditionalPanel(condition = "input.dataSel == 'Use demo data'",
                                    column(5,selectInput(inputId="model",label="demo data select",
-                                                        choices =c("Yackandandah Creek (VIC)"),
-                                                        selected="Yackandandah Creek (VIC)")))
+                                                        choices =c("Yackandandah Creek (NSE)",
+                                                                   "Yackandandah Creek (NSE-BC02)"),
+                                                        selected="Yackandandah Creek (NSE)")))
                 ),
                 br(),
 

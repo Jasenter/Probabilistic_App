@@ -34,7 +34,8 @@ shinyServer(function(input, output, session) {
     output$file2 <- downloadHandler(filename=function(){paste("example.csv",sep="")},content=function(file){write.csv(demoData,file,row.names=F)})
     RData_fname=input$model
 
-    if (RData_fname == "Yackandandah Creek (VIC)") {data = read.csv(paste(dir.loc,"/402204_SLS.csv",sep=""),as.is=T)}
+    if (RData_fname == "Yackandandah Creek (NSE)") {data = read.csv(paste(dir.loc,"/402204_SLS.csv",sep=""),as.is=T)}
+    if (RData_fname == "Yackandandah Creek (NSE-BC02)") {data = read.csv(paste(dir.loc,"/402204_BC02.csv",sep=""),as.is=T)}
 
     heteroModel = "BC"  # "Box Cox"
 
@@ -130,7 +131,6 @@ shinyServer(function(input, output, session) {
       names(report)=c("Offset (A)",
                       paste("Lag-1 autoregressive coeff. (phi)",sep=""), # estimated correlation phi
                       paste("Innovation standard deviation (sigma)",sep=""), # Sigma_y; the estimated sigma of the innovations
-                      #paste("Mean (",greek['mu'],")",sep=""), # the mean of the observed streamflow data
                       paste("Mean intercept (alpha)",sep=""), # estimated intercept
                       paste("Mean slope (beta)",sep="")) # estimated slope
 
@@ -153,9 +153,9 @@ shinyServer(function(input, output, session) {
      dir.loc = system.file("shiny",package="ProbPred")
      withProgress(message="preparing pdf summary...",value=0,{
        auxiliary(callfunction="output.main",data=vals$out$data,opt=vals$out$data.lab,param=vals$out$param,metrics=vals$out$metrics,dir.loc=dir.loc)
-       auxiliary(callfunction="boxplotter",metrics=vals$out$metrics,dir.loc=dir.loc,type.label="reliability",box.colour="pink")
-       auxiliary(callfunction="boxplotter",metrics=vals$out$metrics,dir.loc=dir.loc,type.label="sharpness",box.colour="white")
-       auxiliary(callfunction="boxplotter",metrics=vals$out$metrics,dir.loc=dir.loc,type.label="bias",box.colour="lightblue")
+       auxiliary(callfunction="boxplotter",metrics=vals$out$metrics[[1]],dir.loc=dir.loc,type.label="reliability",box.colour="pink")
+       auxiliary(callfunction="boxplotter",metrics=vals$out$metrics[[2]],dir.loc=dir.loc,type.label="sharpness",box.colour="white")
+       auxiliary(callfunction="boxplotter",metrics=vals$out$metrics[[3]],dir.loc=dir.loc,type.label="bias",box.colour="lightblue")
 
        auxiliary(callfunction="plot.performance",data=vals$out$data,opt=vals$out$data.lab,pred.reps=vals$out$pred.reps)
 
@@ -245,7 +245,7 @@ shinyServer(function(input, output, session) {
       if(input$boxPlot == "Reliability"){metric="reliability";boxColour="pink";met=1}
       if(input$boxPlot == "Sharpness"){metric="sharpness";boxColour="white";met=2}
       if(input$boxPlot == "Bias"){metric="bias"; boxColour="lightblue";met=3}
-      auxiliary(callfunction="boxplotter",metrics=vals$out$metrics,dir.loc=dir.loc,type.label=metric,box.colour=boxColour)
+      auxiliary(callfunction="boxplotter",metrics=vals$out$metrics[[met]],dir.loc=dir.loc,type.label=metric,box.colour=boxColour)
 
     })
     incProgress(amount=0.75)

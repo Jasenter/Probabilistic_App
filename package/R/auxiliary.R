@@ -64,7 +64,7 @@ auxiliary = function(callfunction,data=NULL,opt=NULL,param=NULL,pred.reps=NULL,h
 
   } else if (callfunction=="boxplotter") {
 
-    boxplotter(data_dirname=dir.loc,catchmentMetric=metrics[[1]],metric=type.label,boxColour=box.colour)
+    boxplotter(data_dirname=dir.loc,catchmentMetric=metrics,metric=type.label,boxColour=box.colour)
 
   } else if (callfunction=="plot.performance") {
 
