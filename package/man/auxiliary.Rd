@@ -55,6 +55,6 @@ auxiliary(
 For internal use with the shiny app only. By J Hunter & Team.
 }
 \examples{
-none          ## no example - this script is not for the user; it is for the webapp - and webapps need no examples
+none          ## no example - this script is not for the user; it is for the webapp
 }
 \keyword{none}

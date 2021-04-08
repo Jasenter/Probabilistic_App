@@ -54,7 +54,7 @@ output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc=""
   plot(NA,xlim=c(0.5,3.5),ylim=c(0.5,3.5),xaxt="n",yaxt="n",xlab="",ylab="",main="Metrics")
   text(x=0.5,y=c(3:1),label=c("Reliability","Sharpness","Bias"),pos=4)
   text(x=2,y=c(3:1),label=met.table[[1]])
-  text(x=2.75,y=c(3:1),label=met.table[[3]],pos=4)
+  text(x=2.75,y=c(3:1),label=met.table[[2]],pos=4)
   abline(v=(1.5:2.5))
   abline(h=(1.5:2.5))
 
@@ -62,7 +62,7 @@ output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc=""
 # Parameters
   param.round = c(round(param$A,3),round(param$lambda,3),round(param$mean_eta_0,3),round(param$mean_eta_1,3),round(param$rho,3),round(param$sigma_y,3))
   plot(NA,xlim=c(1,2),ylim=c(0.75,6.25),xaxt="n",yaxt="n",xlab="",ylab="",main="Parameters")
-  text(x=1,y=c(6:1),label=c("Offset","Lambda","Intercept","Slope","Rho","Sigma_y"),pos=4)
+  text(x=1,y=c(6:1),label=c("Offset (A)","Lambda","Mean intercept (alpha)","Mean slope (beta)","Lag-1 AR coeff. (phi)","Innovation sd. (sigma)"),pos=4)
   text(x=1.75,y=c(6:1),label=param.round)
   abline(v=(1.5:2.5))
   abline(h=(1.5:5.5))
