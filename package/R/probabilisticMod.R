@@ -39,10 +39,6 @@
 probabilisticMod = function(data,opt,param) {
 
 
-  #rm(list = ls(all = TRUE))
-  #require("gridExtra")
-  #require("moments")
-  #require("grid")
   x="moments" %in% rownames(installed.packages())
   if(!x) {install.packages("moments",lib=.libPaths())}
   library("moments")
@@ -67,13 +63,8 @@ probabilisticMod = function(data,opt,param) {
 
   #######################################
 
-  #data = list(obs,sim)
-  #names(data) = c("obs","pred")
-  #browser()
   # set error model params
   heteroModel = 'BC'
-  #A = 0
-  #lambda = 0.2
 
   paramFix = list(A=param$A,lambda=param$lambda)
   meantype = opt$meantype
@@ -99,22 +90,16 @@ probabilisticMod = function(data,opt,param) {
   # print replicates
 
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
-  #write.csv(pred.pl,file=paste(title,"_PL.csv",sep=""))
-  #write.csv(x=pred.reps,file=paste(title,"_PredReps.csv",sep=""))
+
    print("Starting calculation of metrics...")
  # generating metrics (reliability, precision, bias)
    metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
 
    print("Printing to pdf...")
-#pdf.options(title="Probabilistic predictions")
+
    pdf(paste(title,"_Summary.pdf",sep=""))
 #
-   # Printing first page
-   #frontpage(inputName=opt$inputName,param=param,metrics=metrics)
-   # Printing second page (errors)
 
-   #msg.print=error.print(data=data,opt=opt)
-   #error.write(msg.print=msg.print,data=data,opt=opt,is.data=T) #error.print(data=data,opt=opt)
    output.main(param=param,metrics=metrics,data=data,is.data=T,opt=opt,dir.loc=data_dirname) # printing new front page
   # Boxplots
    boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$reliability,metric="reliability",boxColour="pink")
@@ -132,11 +117,11 @@ probabilisticMod = function(data,opt,param) {
    tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt)
    #
 
-   if (!is.na(min(data[[opt$obs]])) && !is.na(min(data[[opt$pred]]))) {
-   #if (msg.print[5] == "No issues found! ") { # Only print these if there's no missing data
-     acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel,opt=opt)
-     acfplotter(data=data,acfType='pacf',param=param,heteroModel=heteroModel,opt=opt)
-   }
+   ## Prints auto & partial correlation plots
+   #if (!is.na(min(data[[opt$obs]])) && !is.na(min(data[[opt$pred]]))) {
+     #acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel,opt=opt)
+     #acfplotter(data=data,acfType='pacf',param=param,heteroModel=heteroModel,opt=opt)
+   #}
    # Timeseries
    timeseries(data=data,pred.reps=pred.reps,opt=opt)
    #

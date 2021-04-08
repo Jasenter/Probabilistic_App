@@ -94,8 +94,8 @@ error = function(msgFlag,num=NA) {
 # Suite of tests on the data's suitability for predicting
 
 error.print = function(data,opt) {
-  msg.print = vector(length=6)
-  msg.out = rep("No issues found!",6)
+  msg.print = vector(length=2)
+  msg.out = rep("No issues found!",2)
   maxL=sum(data[[opt$obs]] >= 0, na.rm=TRUE) #number of all counted flows
   zeroL = sum(data[[opt$obs]] <=0,na.rm=TRUE) # number of zero flows
   naL = sum(is.na(data[[opt$obs]]))
@@ -117,11 +117,11 @@ error.print = function(data,opt) {
   if (maxL <= 300) {
     msg.out[msgFlag] = error(msgFlag=msgFlag)
   }
-  msg.print[msgFlag] = paste("Time-series length check. ",msg.out[msgFlag],sep="")
+  msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
 
 # Test for influential points
-  msgFlag = 3
-  msg.print[msgFlag] = paste("Significant data points check. ",msg.out[msgFlag],sep="")
+  # msgFlag = 3
+  # msg.print[msgFlag] = paste("Significant data points check. ",msg.out[msgFlag],sep="")
 
 # Test for large gaps in data
   # msgFlag = 4
@@ -131,25 +131,24 @@ error.print = function(data,opt) {
   # msg.print[msgFlag] = paste("Gaps in data check. ",msg.out[msgFlag],sep="")
 
 # Count for number of missing data
-  msgFlag = 5
-  if (naL > 0) {
-    msg.out[msgFlag] = error(msgFlag=msgFlag,num=naL)
-  }
-  msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
+  # msgFlag = 5
+  # if (naL > 0) {
+  #   msg.out[msgFlag] = error(msgFlag=msgFlag,num=naL)
+  # }
+  # msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
 
 # test for recognisable streamflow units
-  x=opt$unit
-  xCount=0
-  #print(paste("default unit is ",x,sep=" "))
-  viable.units = c("mmd","mm/d","m3s","m3/s","MLd","ML/d")
-  for(i in 1:length(viable.units)) {
-    if(x==viable.units[i]) {xCount=xCount+1}
-  }
-  msgFlag = 6
-  if(xCount<0.1) {
-    msg.out[msgFlag] = error(msgFlag=msgFlag)
-  }
-  msg.print[msgFlag] = paste("Streamflow units check. ",msg.out[msgFlag],sep="")
+  # x=opt$unit
+  # xCount=0
+  # viable.units = c("mmd","mm/d","m3s","m3/s","MLd","ML/d")
+  # for(i in 1:length(viable.units)) {
+  #   if(x==viable.units[i]) {xCount=xCount+1}
+  # }
+  # msgFlag = 6
+  # if(xCount<0.1) {
+  #   msg.out[msgFlag] = error(msgFlag=msgFlag)
+  # }
+  # msg.print[msgFlag] = paste("Streamflow units check. ",msg.out[msgFlag],sep="")
 
   return(msg.print)
 }

@@ -10,18 +10,18 @@ plot.performance = function(data,pred.reps,type,opt,...){
 
 plot.residuals = function(data,std.resids,type,model,param,opt,xlab=NULL,ylab=NULL,...){
   if (type == 'prob(pred)'){
-    if (is.null(ylab)){ylab='Standardized residuals'}
+    if (is.null(ylab)){ylab='Standardised residuals'}
     plot.residuals.multi(residuals=std.resids,pred=data[[opt$pred]],
                          plot.type=type, resid.outlier.thres = c(NA),
                          ylab=ylab,xaxs='i',yaxs='i',...)
     } else if (type == 'pred'){
-      if (is.null(ylab)){ylab='Standardized residuals'}
+      if (is.null(ylab)){ylab='Standardised residuals'}
       plot.residuals.multi(residuals=std.resids,pred=data[[opt$pred]],
                            plot.type=type, resid.outlier.thres = c(NA),
                            xlab=c(paste("Predictions (",opt$unit,")",sep="")),ylab=ylab,xaxs='i',yaxs='i',...)
 
     } else if (type == 'density'){
-      if (is.null(xlab)){ylab='Standardized residuals'}
+      if (is.null(xlab)){ylab='Standardised residuals'}
       if (is.null(ylab)){ylab='Probability density'}
       plot.residuals.multi(residuals=std.resids,pred=data[[opt$pred]],
                          plot.type=type, resid.outlier.thres = c(NA),
@@ -70,11 +70,6 @@ boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
   mtext(side=3,line=1,text=c(metric),cex=2,font=2)
   mtext(side=2,line=3,font=2,cex=1.2, c("metric value"))
   axis(side=4,at=c(0.0,ylim.max),labels=c("better","worse"),las=2)
-  #arrows(x0=xrow,x1=xrow,y0=0,y1=ylim.max,xpd=NA)
-  #arrows(x0=xrow,x1=xrow,y0=ylim.max,y1=0,xpd=NA)
-  #text(x=xrow,y=0-txtoffset,labels=c("better"),xpd=NA)
-  #text(x=xrow,y=ylim.max+txtoffset,labels=c("worse"),xpd=NA)
-  # legend(x="topright",legend=c(catchmentMetric))
 
 }
 ############################################################################
@@ -83,7 +78,7 @@ timeseries = function(data,pred.reps,opt) {
 
   nlen = length(data[[opt$obs]])
   nt = floor(nlen/365) # numbers of timesteps in a year
-  #final = length(data$obs-(nt*365)) # any remaining days
+
   for (i in 1:(nt+1)) {
 
     if (i > nt) { # last iteration
@@ -98,13 +93,10 @@ timeseries = function(data,pred.reps,opt) {
     }
 
     ylim.max = max(data[[opt$obs]][start:end],sort(pred.reps[start:end,])[0.9*length(sort(pred.reps[start:end,]))],na.rm=T)
-    plot.problim(obs=data[[opt$obs]],pred.reps=pred.reps,xlab='Time',ylab='Prediction (mmd)',add.indices=F,
+    plot.problim(obs=data[[opt$obs]],pred.reps=pred.reps,xlab='Time',ylab=paste('Prediction (',opt$unit,")",sep=""),add.indices=F,
                  xlim=c(start,end),ylim=c(0,ylim.max),xtype="date",date=data[[opt$date]],
                  pred=opt$pred,pred.lty=1,pred.lwd=2,pred.col="black",pred.name="Predicted")
 
-    # axis(side=1,
-    #      at=c(start,((end-start)/3)+start,(((end-start)/3)*2)+start,end),
-    #      labels=c(data$date[start],data$date[((end-start)/3)+start],data$date[(((end-start)/3)*2)+start],data$date[end]))
     lines(data$pred,col="black",lwd=2)
   }
 }
@@ -117,7 +109,7 @@ tranzplotter = function(data,param,metFlag=c(T,T,T,T,T),heteroModel,add.legend=F
   sim = calc_tranz(Q=data[[opt$pred]],Qh=NULL,heteroModel=heteroModel,param=param) # transformed predicted flow
 
   plot.np.sdy.cond.x(x=sim,y=eta.std,ylab=c(""),xlab=c(""),metFlag=metFlag,prop.x=0.1)
-  #axis(side=2,at=c(-1,0,1,2),labels=c("-1","0","1","2"))
+
   mtext(side=1,text=c("Transformed deterministic flow"),font=1,line=2)
   abline(h=0,col="grey",lty=2)
   mtext(side=2,text=expression(paste("Standardised residuals   ",bold(nu^"std"),sep=" ")),line=2,font=1)

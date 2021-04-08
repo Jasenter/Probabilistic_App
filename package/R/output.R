@@ -27,7 +27,6 @@ rankHRS = function(metrics,dir.loc) {
     load(RData_fname)
     HRSlab = paste("HRS",metric.name[i],sep="")
     rankVector[i] = round(match(metrics[[i]],sort(c(metrics[[i]],get(HRSlab)[[1]])))/length(c(metrics[[i]],get(HRSlab)[[1]])),digits=3)*100
-    #rankVector[i] = round(rankVector[i],digits=3)*100
     rankVector.text[i] = paste(rankVector[i],"%",sep="")
 
     met[i] = round(metrics[[i]],digits=3) # round now that the calculations with it are done
@@ -61,11 +60,7 @@ output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc=""
 
 
 # Parameters
-  #print(param$lambda)
-  #print(param$rho)
   param.round = c(round(param$A,3),round(param$lambda,3),round(param$mean_eta_0,3),round(param$mean_eta_1,3),round(param$rho,3),round(param$sigma_y,3))
-  #print(met.table.param[[1]])
-  #print(met.table.param[[2]])
   plot(NA,xlim=c(1,2),ylim=c(0.75,6.25),xaxt="n",yaxt="n",xlab="",ylab="",main="Parameters")
   text(x=1,y=c(6:1),label=c("Offset","Lambda","Intercept","Slope","Rho","Sigma_y"),pos=4)
   text(x=1.75,y=c(6:1),label=param.round)
@@ -84,70 +79,5 @@ output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc=""
 ##############################################################
 
 
-##############################################################
-## Writing errors
-
-
-
-
-##############################################################
-
-##############################################################
-## Writing page 1 (front page)
-## REQUIRES GRID PACKAGE
-
-frontpage = function(inputName,param,metrics){
-
-  met.table.param = data.frame(round(param$A,3),round(param$lambda,3),round(param$mean_eta_0,3),round(param$mean_eta_1,3),round(param$rho,3),round(param$sigma_y,3))
-
-  met.table = rankHRS(metrics)
-
-  header.A = textGrob("Probabilistic Predictions",just="bottom",gp=gpar(fontsize=20))
-  header.B = textGrob(label=paste("Designed by the UofA Water Group (Bennett, Thyer, McInerney, Hunter, Kavetski, Leonard et al.) 2020",
-                                  "Please direct all comments and bug reports to jason.hunter@adelaide.edu.au",sep="\n"),
-                      #                       just = "right",
-                      gp = gpar(col="grey",fontsize=10))
-  header.C = textGrob(label=paste('Predictive plots and values generated from input data "',inputName,'"',sep=""),
-                      gp=gpar(col="black",fontsize=10),
-                      just=c("centre","bottom"))
-  header.D = textGrob(label="Metrics",gp=gpar(fontsize=15),hjust=4,vjust=1)
-  header.E = textGrob(label="Parameters",gp=gpar(fontsize=15),hjust=3,vjust=3)
-  spacer = textGrob(label="   ")
-
-  x = tableGrob(met.table,
-                rows=c("Reliability","Sharpness","Bias"),
-                cols=c("input_data_metrics","input_data_percentile","input_data_classification"))
-
-  y = tableGrob(met.table.param,
-                rows=c(" "),
-                cols=c("Offset","Lambda","Intercept","Slope","Rho","Sigma_y"))
-
-  grid.arrange(header.A,header.B,header.C, spacer, header.D,x, header.E,y, ncol=1, nrow=8,heights=c(3,1,6,6,1,8,1,8))
-  return()
-}
-##############################################################
-
-
-##############################################################
-## Writing page 2 (error messages)
-## REQUIRES GRID PACKAGE
-
-error.write = function(msg.print=NA,data=NA,is.data=T) {
-
-  if (is.data==T) {
-    msg.print=error.print(data) # checks the input data for problems and writes the vector of error messages
-  }
-
-
-  header.error = textGrob("Output messages",gp=gpar(fontsize=20))
-  error.A = textGrob(msg.print[1])
-  error.B = textGrob(msg.print[2])
-  error.C = textGrob(msg.print[3])
-  error.D = textGrob(msg.print[4])
-  error.E = textGrob(msg.print[5])
-  grid.arrange(header.error,error.A,error.B,error.C,error.D,error.E,ncol=1,nrow=length(msg.print)+1)
-
-  return()
-}
 
 

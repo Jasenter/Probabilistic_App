@@ -1,7 +1,5 @@
-#library(ProbPred)
-##Javascript Code object
-
-
+##########################
+## Javascript Code object
 JScode <-
 
   "$(function() {
@@ -28,7 +26,8 @@ $('#offset').data('ionRangeSlider').update({'values':vals})
 
 }, 5)})"
 
-
+##########################
+## Installing packages
 x="moments" %in% rownames(installed.packages())
 if(!x) {install.packages("moments")}
 library("moments")
@@ -44,9 +43,13 @@ library("shinythemes")
 ####NOTE #####
 #ON THIS SIDE OF THE APP (UI) WITHIN THE SHINYUI FUCTION LINES INSIDE FUNCTIONS (AND FUNCTIONS THEMSELVES) ARE SEPARATED USING COMMAS
 
-# Define UI for dataset viewer application
+##########################
+## Defining the UI
 shinyUI(
 
+
+  ##########################
+  ## Front 'About' page
   navbarPage("Interactive Probabilistic Predictions",theme = shinytheme("united"),
              #FIRST TAB PANEL
              tabPanel("About",
@@ -59,7 +62,7 @@ shinyUI(
                       #helpText("The web-app assumes a least-squares objective function, e.g. the sum-of-squared-errors (SSE) or equivalent Nash-Sutcliffe efficiency (NSE), computed from Box-Cox transformed flows (McInerney et al, 2017)."),
                       #helpText("These include widely used objective functions such as the NSE (lambda=1, A*=0), the NSE on square-root transformed flows (lambda=0.5, A*=0) and the NSE on log-transformed flows (lambda=0, A*=0). "),
                       helpText(h3("Demonstration data")),
-                      helpText("By default, loading up the web-app for the first time will display probabilistic streamflow predictions for the Yackandandah Creek catchment (Australia), obtained from the GR4J rainfall-runoff model pre-calibrated to the NSE-BC02 objective function."),
+                      helpText("By default, loading up the web-app for the first time will display probabilistic streamflow predictions for the Yackandandah Creek catchment (Australia), obtained from the GR4J rainfall-runoff model pre-calibrated to the NSE objective function."),
                       helpText(h3("Uploading your own data")),
                       helpText("To upload your own data, create a CSV file with three columns corresponding to the daily timestep in format (DD/MM/YYYY), observed data and simulated data."),
                       #helpText(HTML("Download the demo data file to see the required format: <a href='http://www.algorithmik.org.au/dat/demoData.csv'> demo data file </a>.")),
@@ -86,24 +89,15 @@ shinyUI(
 
              ),
 
-             #SECOND TAB PANEL
+             ##########################
+             ## 'Simulation' panel
              tabPanel("Simulation", icon=icon("area-chart","fa-1.9x"),  #adding an icon to the tab
-
-
-#            splitLayout(
-
-              #Well panel (to group inputs)
-#              fluidPage(
-
-#              column(8,
-
-#            ), # end of horizontal layout
 
             verticalLayout(
 
               wellPanel(
 
-                #Headings
+                # HEADINGS
                 fluidRow(
                   column(4,helpText(h3("Input Data"))),
                   conditionalPanel(condition = "input.dataSel == 'Use demo data'",
@@ -112,28 +106,24 @@ shinyUI(
                                                         selected="Yackandandah Creek (VIC)")))
                 ),
                 br(),
-                #INPUT DATA
+
+                # INPUT DATA
                 fluidRow(
                   column(5,radioButtons(inputId="dataSel",label="",choices=c("Use demo data","Load my own data"),selected="Use demo data",inline = TRUE))
                   ),
                 fluidRow(
 
-                  #conditionalPanel(condition = "input.dataSel == 'Use demo data'",
-                  #                   column(2,selectInput("dataset","dataset",choices =c("B1 GR4J SLS"),selected="Gingera GR4J Log")) # Gingera GR4J Log
-                  #),
                   conditionalPanel(condition = "input.dataSel == 'Load my own data'",
                                    column(3,
-                                          downloadLink('file1',label="Load file (e.g. demo data file)"),
-                                          #fileInput('file1',label=HTML("Load file (e.g. <a href='http://www.algorithmik.org.au/dat/demoData.csv'> demo data file </a>)"),
-                                          #          accept=c('text/csv', 'text/comma-separated-values,text/plain','.csv')), #,
-                                          #fileInput('file1',label="see help files for layout"),
+                                          fileInput('file1',label="",accept=c('text/csv','text/comma-separated-values/plain','.csv')),
+                                          downloadLink('file2',label="data file example - use 'Open in Browser' at top of interface for easy viewing"), # downloads demo data from package
                                           textInput(inputId="lab.date",label="header of dates",value="date"),
                                           textInput(inputId="lab.obs",label="header of observed data",value="obs"),
                                           textInput(inputId="lab.pred",label="header of predicted data",value="pred"),
                                           textInput(inputId="lab.unit",label="input units (e.g. mm/d, m3/s, ML/d)"),value="mm/d")
                                    )
                 )
-              ), #end of well panel
+              ), # end of well panel
 
 
 # MODEL PARAMETERS
@@ -144,24 +134,15 @@ shinyUI(
 
                 fluidRow(
                   column(3,sliderInput("lambda","Transformation power parameter (Lambda)",min=0, max=1,value=0.2,step=0.1),
-                  #column(3,
                          tags$head(tags$script(HTML(JScode))),
                          sliderInput("offset", "Transformation offset parameter [Dimensionless] (A*)",min = 0,max = 1e-0,value = 0.0001)),
                   column(2,selectInput(inputId="mean",label="mean structure",choices=c("linear","constant","zero"),selected="zero")),
                   column(5,div(tableOutput("report"),style="font-size:120%"))
                 )
-                #submitButton("Run simulation / update plots")
-                # fluidRow(
-                #   checkboxInput(inputId="autoSim",label="Toggle automatic or manual updating",value=TRUE)
-                # ),
-                # fluidRow(
-                #   conditionalPanel(condition="input.autoSim==true",
-                #                    submitButton("Run simulation / update plots")
-                #                    )
-                # )
+
               ),
- #expression(paste("Standardised residuals   ",bold(nu^"std"),sep=" "))
-#WARNING MESSAGES
+
+# WARNING MESSAGES
 
               wellPanel(
                 fluidRow(
@@ -170,24 +151,19 @@ shinyUI(
                   fluidRow(
                     column(7,textOutput(outputId="error1")),
                     column(7,textOutput(outputId="error2")),
-                    column(7,textOutput(outputId="error3")),
-                   # column(7,textOutput(outputId="error4")),
-                    column(7,textOutput(outputId="error5")),
-                    column(7,textOutput(outputId="error6"))
+                    #column(7,textOutput(outputId="error3")),
+                    #column(7,textOutput(outputId="error5")),
+                    #column(7,textOutput(outputId="error6"))
                   )
               ),
 
-#TIME SERIES PLOT
+# TIME SERIES PLOT
               wellPanel(
-                #helpText("Note: Please click 'Update plots' to refresh page."),
-                #Plot selector
+
                 fluidRow(
-                  # column(4,helpText(h3("Plotting"))),
                   column(4,checkboxInput(inputId="plotTS",label="Plot timeseries",value=TRUE)) #tick box to hide plot & plotting options
                 ),
-                #Reveal date range selector if plotTS is ticked
                 fluidRow(
-                  #column(2,checkboxInput(inputId="plotTS",label="Plot timeseries",value=TRUE)),
                   conditionalPanel(condition = "input.plotTS == true",
                                    plotOutput("TS"),  #outputting a graphic beneath (option to turn off)
                                    column(8,sliderInput("datRange","X range",min=0, max=1000,value=c(50,450),step=5)),
@@ -196,28 +172,25 @@ shinyUI(
                     )
               ),
 
-#PREDICTIVE PERFORMANCE EVALUATION PLOTS
+# PREDICTIVE PERFORMANCE EVALUATION PLOTS
               wellPanel(
                 fluidRow(
                   column(4,checkboxInput(inputId="plotEval",label="Plot predictive performance evaluation",value=TRUE)) #tick box to hide plot & plotting options
                 ),
 
                 conditionalPanel(condition = "input.plotEval==true",
-                 #Write Labels for Plot Selector,
-                 #helpText("Note: Please click 'Update plots' to refresh page."),
+
                   fluidRow(
                     column(6,helpText("Performance metric plot type")),
                     column(6,helpText("Performance benchmarking"))
                   ),
 
-                  #Plot selector dropdown menus (aligned with labels)
                   fluidRow(
                     column(6,selectInput("perfPlot",NULL,choices =c("Predictive QQ plot"),selected="Predictive QQ plot")),
                     column(6,selectInput("boxPlot",NULL,choices = c("Reliability","Sharpness","Bias"),selected="Reliability"))
 
                   ),
 
-                  #then two side-by-side & perfPlot
                   fluidRow(
                     column(6,plotOutput("perf")),  #far-left
                     column(6,plotOutput("box"))   #centre-right
@@ -241,30 +214,23 @@ shinyUI(
                 fluidRow(
                   column(4,checkboxInput(inputId="plotResid",label="Plot residual diagnostics",value=TRUE)) #tick box to hide plot & plotting options
                 ),
-                #helpText("Note: Please click 'Update plots' to refresh page."),
                 conditionalPanel(condition = "input.plotResid==true",
 
                   fluidRow(
                     column(3,helpText("Residual plot type"))
-#                  column(3,helpText("Transformed residuals with moving statistics"))
                   ),
                   fluidRow(
                     column(4,selectInput("resPlot",NULL,
                                          choices =c("Standardised residuals v predictions",
                                                     "Standardised residuals v cummulative probability of predictions",
                                                     "Probability density of standardised residuals",
-                                                    "Standardised residuals v transformed simulated flow",
-                                                    #"Transformed residuals with moving statistics",
-                                                    "Autocorrelation plot of the residual innovations",
-                                                    "Partial-autocorrelation plot of the residual innovations"),
+                                                    "Standardised residuals v transformed predictions"),
+                                                    #"Autocorrelation plot of the residual innovations",
+                                                    #"Partial-autocorrelation plot of the residual innovations"),
                                          selected="Standardised residuals v predictions"))
-                  #column(3,checkboxGroupInput(inputId="tranzPlot",label="",
-                  #                            choices=c("mean","standard deviation","skewness","excess kurtosis","linear model"),
-                  #                            inline=T,selected=NULL,width=NULL))
                   ),
                   fluidRow(
                     plotOutput("resid")) #centre-left
-                #  column(3,plotOutput("tranz"))  #far-right
                 )
               ), #end well panel
 

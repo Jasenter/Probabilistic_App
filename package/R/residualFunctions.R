@@ -15,8 +15,9 @@ calc_std_resids = function(data,param,heteroModel,opt){
   mu0 = param$mean_eta_0
   mu1 = param$mean_eta_1
   mu = mu0+Qh*mu1
+  eta=eta-mu
   s = sqrt((sum((eta-mu)^2,na.rm=T))/n)
-  sigma = s/sqrt(1.-param$rho^2)   
+  sigma = s/sqrt(1.-param$rho^2)
   nu = (eta-mu)/sigma
   return(nu)
 }
@@ -35,9 +36,8 @@ calc_innovations = function(data,param,heteroModel,opt){
   mu1 = param$mean_eta_1
   mu = mu0+Qh*mu1
   phi = param$rho
-  # s = sqrt((sum((eta-mu)^2,na.rm=T))/n)
-  # sigma = s/sqrt(1.-param$rho^2) 
-  
+
+
   for (i in 2:n){
     y[i] = (eta[i]-mu[i]) - (phi*(eta[i-1]-mu[i]))
   }

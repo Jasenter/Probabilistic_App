@@ -18,15 +18,13 @@
 #' @keywords none
 #' @export
 #' @examples
-#' none          ## no example - this script is not for the user; it is for the webapp - and webapps need no examples
+#' none          ## no example - this script is not for the user; it is for the webapp
 
 
 
 
 #######################################
 ## Interfacing for the shiny app
-
-
 
 auxiliary = function(callfunction,data=NULL,opt=NULL,param=NULL,pred.reps=NULL,heteroModel="BC",calc_rho=T,meantype=NULL,metrics=NULL,
                      dir.loc=NULL,type.label=NULL,box.colour=NULL,std.resids=NULL,pred.pl=NULL,input=NULL) {

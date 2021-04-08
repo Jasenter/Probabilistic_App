@@ -3,7 +3,6 @@
 ############################################################################
 
 calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meantype,opt){
-  #browser()
 
   Qobs=data[[opt$obs]]
   Qh=data[[opt$pred]]
@@ -37,6 +36,7 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
     m = lm(eta~Qh)
     mu0 = m$coefficients[1]
     mu1 = m$coefficients[2]
+
   } else if (meantype=="constant"){
     mu0 = mean(eta,na.rm=T)
     mu1 = 0.
@@ -53,13 +53,8 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
   mu = mu0+mu1*Qh
   eta.star = eta-mu
   s = sqrt((sum((eta.star)^2,na.rm=T))/n)
-  #browser()
-  #s = sqrt(mean((eta-mu)^2,na.rm=T))
-  #corr_term = (eta[2:Nt]-mu[2:Nt])*(eta[1:(Nt-1)]-mu[1:(Nt-1)])
-  #  Nt_corr = length(which(!is.na(corr_term)))
+
   if (calc_rho){
-#    rho = (Nt_corr+1)/(Nt_corr-4)*(1/Nt_corr)*(1/s^2)*sum(corr_term,na.rm=T)
-#    rho = cor(eta[2:Nt],eta[1:(Nt-1)])
 
     ErrorlagForward <- eta.star[2:n]
     ErrorlagBackward <- eta.star[1:n-1]
@@ -71,8 +66,6 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
   } else {
     rho = 0.
   }
-#    browser()
-#    sigma = s*sqrt(1-rho^2)
   sigma = sqrt((s^2)*(1-(rho^2))) # sigma
   return(list(mu0=mu0,mu1=mu1,rho=rho,sigma=sigma,mu=mu))
 }

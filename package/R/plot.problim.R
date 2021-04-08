@@ -56,7 +56,6 @@ plot.problim<-function(
   # Apply mask
   if (!is.null(mask)) {
     if ("obs" %in% mask.apply) obs[mask]=NA
-    #pred.pl[!mask]=NA
     if ("pred" %in% mask.apply) pred[mask]=NA
   }
 
@@ -80,7 +79,6 @@ plot.problim<-function(
   # Draw Probability Limits
   n=max(length(x),nrow(pred.pl))
   ncol.pl=ncol(pred.pl)
-  #if ((ncol.pl %% 2)==0) {stop("Need 3 columns (quantiles) in pred.pl for pl.fill to work")}
   leg.pch=NULL;leg.col=NULL; leg.lty=NULL; leg.txt=NULL; pt.bg=NULL
   for (i in 1:n.pl) {
     leg.txt=c(paste(pl.name,pl[i]*100,"% probability",sep=""),leg.txt)
@@ -119,17 +117,9 @@ plot.problim<-function(
     }
   }
 
-  # Plot predicted data
-  # if(!is.null(pred)) {
-  #   if(!switch.xy) {
-  #     if (!is.null(pred.pch)) {points(pred,pch=pred.pch,col=pred.col,bg=pred.fill.col)} else {pred.pch=NA}
-  #     if (!is.null(pred.lty)) {lines(pred,lwd=pred.lwd,lty=pred.lty,col=pred.col)} else {pred.lty=NA}
-  #   } else {
-  #     if (!is.null(pred.pch)) {points(x=pred,y=x,pch=pred.pch,col=pred.col,bg=pred.fill.col)} else {pred.pch=NA}
-  #     if (!is.null(pred.lty)) {lines(x=pred,y=x,lwd=pred.lwd,lty=pred.lty,col=pred.col)} else {pred.lty=NA}
-  #   }
+
      leg.txt=c(pred.name,leg.txt); leg.pch=c(pred.pch=NA,leg.pch); leg.lty=c(pred.lty=1,leg.lty);leg.col=c(pred.col="black",leg.col);pt.bg=c(pred.fill.col=NA,pt.bg)
-  # }
+
   # Plot observed data
   if(!is.null(obs)) {
     if(!switch.xy) {
@@ -206,52 +196,6 @@ plot.problim<-function(
   }
 
   return(invisible(pred.pl))
-  ### returns the probability limits of the simulated data (invisibly)
-  ## TODO: return the indices
-}
-
-attr(plot.problim,"ex") <- function(){
-
-# Generate some example replicates
-ndata=50;nReps=1000
-reps=matrix(data=NA,nrow=ndata,ncol=nReps)
-for (i in 1:nReps) {reps[,i]=rnorm(n=ndata,mean=1000,sd=200)}
-pred=rep(1000,50)
-
-# observed data and 2 pl limits, the default
-plot.problim(pred.reps=reps,obs=reps[,200])
-
-# observed & simulated data and 2 pl limits
-plot.problim(pred.reps=reps,obs=reps[,200],pred=pred)
-
-# observed & simulated data with fancy shaded pl limits
-plot.problim(pred.reps=reps,obs=reps[,200],pred=pred,pl=seq(0.01,0.99,0.01),pl.border=NA,leg.add=FALSE)
-
-# Probability limits and predictions, and applying a mask to only plot values greater than 800
-plot.problim(pred.reps=reps,obs=reps[,200],pl=c(0.5,0.90,0.99),pred=reps[,200],mask=reps[,200]<800)
-
-# observed data and 3 probability limits
-plot.problim(pred.reps=reps,obs=reps[,200],pl=c(0.5,0.90,0.99),obs.name="Fake Observed",pred.name="Fake predicted")
-
-# Probability limits and predictions
-plot.problim(pred.reps=reps,obs=reps[,200],pred=reps[,200])
-
-# Probability limits and predictions, and applying a mask to only plot values greater than 800
-plot.problim(pred.reps=reps,obs=reps[,200],pred=reps[,200],mask=reps[,200]>800)
-
-# observed data and 3 pl limits - axes swapped
-plot.problim(pred.reps=reps,obs=reps[,200],pl=c(0.5,0.90,0.99),switch.xy=TRUE)
-
-# Probability limits in rainbow colours(reversed), observed data and 3 pl limits
-plot.problim(pred.reps=reps,obs=reps[,200],pl.col=rainbow(3)[3:1],pl=c(0.5,0.90,0.99))
-
-# two different predicted data on the same plot
-plot.problim(pred.reps=reps+800,pl.col=rainbow(3)[3:1],pl=c(0.5,0.90,0.99),pred.name="pred Set A",ylim=c(0,3000))
-plot.problim(pred.reps=reps-500,pl=c(0.5,0.9,0.99),add=TRUE,leg.x="topright",pred.name="pred Set B")
-
-# Probability limits as bars instead of filled lines,
-plot.problim(obs=reps[,2],pred.reps=reps,pl.bar=TRUE,pl.fill=FALSE)
-
 
 }
 
