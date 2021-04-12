@@ -151,7 +151,7 @@ shinyUI(
                  ),
                   fluidRow(
                     column(7,textOutput(outputId="error1")),
-                    column(7,textOutput(outputId="error2")),
+                    column(7,textOutput(outputId="error2"))
                     #column(7,textOutput(outputId="error3")),
                     #column(7,textOutput(outputId="error5")),
                     #column(7,textOutput(outputId="error6"))
@@ -167,8 +167,8 @@ shinyUI(
                 fluidRow(
                   conditionalPanel(condition = "input.plotTS == true",
                                    plotOutput("TS"),  #outputting a graphic beneath (option to turn off)
-                                   column(8,sliderInput("datRange","X range",min=0, max=1000,value=c(50,450),step=5)),
-                                   column(4,sliderInput("yRange","Y range",min=0, max=50,value=c(0,30),step=5))
+                                   column(8,sliderInput("datRange","X range",min=0, max=1000,value=c(50,450),step=1)),
+                                   column(4,sliderInput("yRange","Y range",min=0, max=30,value=c(0,30),step=1.0,round=TRUE))
                             )
                     )
               ),

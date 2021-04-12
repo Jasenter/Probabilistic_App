@@ -86,7 +86,7 @@ auxiliary = function(callfunction,data=NULL,opt=NULL,param=NULL,pred.reps=NULL,h
 
     plot.problim(obs=data[[opt$obs]],pred=data[[opt$pred]],pred.pl=pred.pl,xlim=input$datRange,ylim=input$yRange,
                  add.indices=F,xlab='Time',ylab=paste('Prediction (',opt$unit,")",sep=""),xtype="date",date=data[[opt$date]])
-
+    lines(data$pred,col="black",lwd=1)
 
 
   }

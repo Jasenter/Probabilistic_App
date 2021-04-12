@@ -68,6 +68,32 @@ probPred = function(data,opt,param) {
 
   paramFix = list(A=param$A,lambda=param$lambda)
   meantype = opt$meantype
+
+
+  ## Error checks on the input data
+  data.headers = colnames(data)
+
+  if(!is.element(opt$obs,data.headers) |
+     !is.element(opt$pred,data.headers) |
+     !is.element(opt$date,data.headers)) {
+    xerr(flag=1)# headers not in the data file
+    return()
+  } else if(all(is.na(data[opt$obs][[1]])) | all(is.na(data[opt$pred][[1]])) | all(is.na(data[opt$date][[1]]))) {
+    xerr(flag=2) # checks for empty data vectors
+    return()
+
+  } else if(is.character(data[opt$obs][[1]]) | is.character(data[opt$pred][[1]]) | is.numeric(data[opt$date][[1]])) {
+    xerr(flag=3) # check for characters (e.g. dates) in the obs or pred
+    return()
+  } else if(sum(data[opt$obs][[1]]-data[opt$pred][[1]],na.rm=T)==0) {
+    xerr(flag=4) # check for obs and pred being the same vector
+    return()
+  } else if(length(data[opt$obs][[1]])!=length(data[opt$pred][[1]]) |
+            length(data[opt$obs][[1]])!=length(data[opt$date][[1]])) {
+    xerr(flag=5) # checks that the input vectors are all the same length
+    return()
+  }
+
   data[[opt$obs]][data[[opt$obs]]<0 | is.infinite(data[[opt$obs]]) | is.nan(data[[opt$obs]])] = NA
   data[[opt$pred]][data[[opt$pred]]<0 | is.infinite(data[[opt$pred]]) | is.nan(data[[opt$pred]])] = NA
 

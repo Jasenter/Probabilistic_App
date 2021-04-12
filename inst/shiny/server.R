@@ -18,6 +18,7 @@ shinyServer(function(input, output, session) {
                input$offset
                input$model
                input$mean
+               input$dataSel
                }
                ,{
 
@@ -27,39 +28,47 @@ shinyServer(function(input, output, session) {
     if(input$offset>0){Astar=10^-(8-input$offset)}else{Astar=0}
     dir.loc = system.file("shiny",package="ProbPred")
 
-    # PREPARING DEMO DATA FOR PRINTING
+    # PREPARING EXAMPLE DATA FOR PRINTING
     demoData = read.csv(paste(dir.loc,"/","402204_SLS.csv",sep=""))
     demoData = demoData[,2:4]
 
     output$file2 <- downloadHandler(filename=function(){paste("example.csv",sep="")},content=function(file){write.csv(demoData,file,row.names=F)})
-    RData_fname=input$model
-
-    if (RData_fname == "Yackandandah Creek (NSE)") {data = read.csv(paste(dir.loc,"/402204_SLS.csv",sep=""),as.is=T)}
-    if (RData_fname == "Yackandandah Creek (NSE-BC02)") {data = read.csv(paste(dir.loc,"/402204_BC02.csv",sep=""),as.is=T)}
 
     heteroModel = "BC"  # "Box Cox"
 
     meantype=input$mean
 
     lambda=as.numeric(input$lambda)
+    data.lab = list(obs="obs",pred="pred",date="date",unit="mm/d")
 
     # READ FILES
-    inFileObs <- input$file1
-    if (!is.null(inFileObs)){
+    if(input$dataSel=="Load my own data" & !is.null(input$file1)) {
+      inFileObs <- input$file1
 
       data=as.data.frame(read.csv(inFileObs$datapath, header=TRUE))
 
       data.lab = list(obs=input$lab.obs,pred=input$lab.pred,date=input$lab.date,unit=input$lab.unit)
 
     } else {
-      data.lab = list(obs="obs",pred="pred",date="date",unit="mm/d")
+      RData_fname=input$model
+      if (RData_fname == "Yackandandah Creek (NSE)") {data = read.csv(paste(dir.loc,"/402204_SLS.csv",sep=""),as.is=T)}
+      if (RData_fname == "Yackandandah Creek (NSE-BC02)") {data = read.csv(paste(dir.loc,"/402204_BC02.csv",sep=""),as.is=T)}
+
     }
+    #if (!is.null(inFileObs)){
+
+
+    #} else {
+
+
+    #}
 
     ##########################
     ## CALCULATIONS
 
     isolate({
-      if (!is.null(inFileObs)){
+      if (input$dataSel=="Load my own data" & !is.null(input$file1)) {
+      #if (!is.null(inFileObs)){
         data=as.data.frame(read.csv(inFileObs$datapath, header=TRUE))
 
         data.headers = colnames(data)
@@ -77,7 +86,7 @@ shinyServer(function(input, output, session) {
         } else if(is.character(data[data.lab$obs][[1]]) | is.character(data[data.lab$pred][[1]]) | is.numeric(data[data.lab$date][[1]])) {
           xerr(flag=3) # check for characters (e.g. dates) in the obs or pred
           return()
-        } else if(sum(data[data.lab$obs][[1]]-data[data.lab$pred][[1]])==0) {
+        } else if(sum(data[data.lab$obs][[1]]-data[data.lab$pred][[1]],na.rm=T)==0) {
           xerr(flag=4) # check for obs and pred being the same vector
           return()
         } else if(length(data[data.lab$obs][[1]])!=length(data[data.lab$pred][[1]]) |
@@ -145,8 +154,10 @@ shinyServer(function(input, output, session) {
 
   })
 # DOWNLOADING DATA
-  output$dlReps <- downloadHandler(filename=function(){paste(input$model,"predReps",".csv",sep="")},content=function(file){write.csv(vals$out$pred.reps,file)})
-  output$dlPL <- downloadHandler(filename=function(){paste(input$model,"ProbLimits",".csv",sep="")},content=function(file){write.csv(vals$out$pred.pl,file)})
+  #reps.dl =
+  #pred.pl.dl =
+  output$dlReps <- downloadHandler(filename=function(){paste(input$model,"predReps",".csv",sep="")},content=function(file){write.csv(cbind(date=vals$out$data$date,vals$out$pred.reps),file)})
+  output$dlPL <- downloadHandler(filename=function(){paste(input$model,"ProbLimits",".csv",sep="")},content=function(file){write.csv(cbind(date=vals$out$data$date,vals$out$pred.pl),file)})
   output$dlSummary <- downloadHandler(filename=function(){paste(input$model,"Summary",".pdf",sep="")},content=function(file){
      pdf(file=file)
 
@@ -214,6 +225,10 @@ shinyServer(function(input, output, session) {
     input$yRange
     input$datRange
     vals$out$pred.pl
+    xmax=length(vals$out$data[vals$out$data.lab$obs][[1]])
+    ymax = ceiling(max(vals$out$data[vals$out$data.lab$pred][[1]],na.rm=T))
+    updateSliderInput(inputId="datRange",max=xmax)
+    updateSliderInput(inputId="yRange",max=ymax,min=0,step=1.0)
     isolate({
       auxiliary(callfunction="plot.problim",data=vals$out$data,opt=vals$out$data.lab,pred.pl=vals$out$pred.pl,input=input)
       })

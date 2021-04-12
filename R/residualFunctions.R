@@ -10,15 +10,25 @@ calc_eta = function(Qobs,Qh,param,heteroModel){
 calc_std_resids = function(data,param,heteroModel,opt){
   Qobs = data[[opt$obs]]
   Qh = data[[opt$pred]]
-  n=length(Qobs)
+  Qh_T = calc_tranz(Q=Qh,heteroModel=heteroModel,param=param) # The transformed simulated streamflow
   eta = calc_eta(Qobs,Qh,param,heteroModel)
+  n = length(eta)-sum(is.na(eta))
   mu0 = param$mean_eta_0
   mu1 = param$mean_eta_1
-  mu = mu0+Qh*mu1
-  eta=eta-mu
-  s = sqrt((sum((eta-mu)^2,na.rm=T))/n)
-  sigma = s/sqrt(1.-param$rho^2)
-  nu = (eta-mu)/sigma
+  mu = mu0+(Qh_T*mu1)
+   eta.star = eta-mu
+   #s = sqrt((sum((eta.star)^2,na.rm=T))/n) # sigma_eta
+   sigmaEta = param$sigma/(sqrt(1-param$rho^2))
+   #sigma = s/sqrt(1.-param$rho^2) # sigmaY from standardising
+   #sigma = sqrt((s^2)*(1-(param$rho^2))) # sigmaY from calibration stage
+  # print(param$sigma)
+  # print(paste("icept is ",mu0))
+  # print(paste("slope is ",mu1))
+  # print(paste("sdeta is ",sigmaEta))
+  #print(paste("sdy is ",sigma))
+  nu = (eta.star)/sigmaEta
+  # print(mean(nu))
+
   return(nu)
 }
 

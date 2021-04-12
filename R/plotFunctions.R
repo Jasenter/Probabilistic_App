@@ -28,7 +28,7 @@ plot.residuals = function(data,std.resids,type,model,param,opt,xlab=NULL,ylab=NU
                          xlab=xlab,xaxs='i',ylab=ylab,...)
 
     } else if (type == 'tranz') {
-      metFlag=c(F,F,F,F,F)
+      metFlag=c(F,F,F,F,T)
       tranzplotter(data=data,param=param,metFlag=metFlag,heteroModel=model,opt=opt)
 
     } else if (type == 'extratranz') {

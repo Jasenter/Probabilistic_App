@@ -33,7 +33,7 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
 
     Nt = length(eta)
   if (meantype=="linear"){
-    m = lm(eta~Qh)
+    m = lm(eta~Qh,na.action=na.omit)
     mu0 = m$coefficients[1]
     mu1 = m$coefficients[2]
 
@@ -49,15 +49,16 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
     print("WARNING: unrecognised mean parameter type provided - zero mean used.")
   }
 
-  n = length(eta)
+  n = length(eta)-sum(is.na(eta))
+  nlen = length(eta)
   mu = mu0+mu1*Qh
   eta.star = eta-mu
   s = sqrt((sum((eta.star)^2,na.rm=T))/n)
 
   if (calc_rho){
 
-    ErrorlagForward <- eta.star[2:n]
-    ErrorlagBackward <- eta.star[1:n-1]
+    ErrorlagForward <- eta.star[2:nlen]
+    ErrorlagBackward <- eta.star[1:nlen-1]
     sb = sqrt((sum((ErrorlagBackward)^2,na.rm=T))/n)
     sf = sqrt((sum((ErrorlagForward)^2,na.rm=T))/n)
 
@@ -66,7 +67,7 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
   } else {
     rho = 0.
   }
-  sigma = sqrt((s^2)*(1-(rho^2))) # sigma
+  sigma = sqrt((s^2)*(1-(rho^2))) # sigmaY
   return(list(mu0=mu0,mu1=mu1,rho=rho,sigma=sigma,mu=mu))
 }
 

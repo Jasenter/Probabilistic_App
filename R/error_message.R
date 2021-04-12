@@ -57,7 +57,7 @@ error = function(msgFlag,num=NA) {
                                  sep=" ")
 
 # Very short time series, or lots of missing data (<300 data points total)
-  } else if (msgFlag==2) {
+  } else if (msgFlag==5) {
     msg.print.error = paste("WARNING: Insufficient number of datapoints (<300) to obtain high-quality predictions.",
                             "Predictions may be of low quality.",
                              "Please see xyz reference for details.",
@@ -76,9 +76,9 @@ error = function(msgFlag,num=NA) {
                             sep="\n")
 
 # Some missing data
-  } else if (msgFlag==5) {
-    msg.print.error = paste("WARNING: ", num, " data points missing from the observed time series.",
-                            "Predictions may be of poor quality, and some plots may not print correctly.",
+  } else if (msgFlag==2) {
+    msg.print.error = paste(num, " data points missing from the observed time series.",
+                            #"Predictions may be of poor quality, and some plots may not print correctly.",
                             sep="\n")
 
   }  else if (msgFlag==6) {
@@ -114,10 +114,10 @@ error.print = function(data,opt) {
 
 # Test for length of time series
   msgFlag = 2
-  if (maxL <= 300) {
-    msg.out[msgFlag] = error(msgFlag=msgFlag)
-  }
-  msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
+  # if (maxL <= 300) {
+  #   msg.out[msgFlag] = error(msgFlag=msgFlag)
+  # }
+  # msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
 
 # Test for influential points
   # msgFlag = 3
@@ -132,10 +132,10 @@ error.print = function(data,opt) {
 
 # Count for number of missing data
   # msgFlag = 5
-  # if (naL > 0) {
-  #   msg.out[msgFlag] = error(msgFlag=msgFlag,num=naL)
-  # }
-  # msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
+  if (naL > 0) {
+    msg.out[msgFlag] = error(msgFlag=msgFlag,num=naL)
+  }
+  msg.print[msgFlag] = paste("Missing data check. ",msg.out[msgFlag],sep="")
 
 # test for recognisable streamflow units
   # x=opt$unit
