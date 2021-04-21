@@ -72,7 +72,7 @@ shinyUI(
                       helpText(HTML("Inspired by <a href='https://doi.org/10.1029/2005WR004820'> Pappenberger & Beven 2006 </a> and <a href = ' https://doi.org/10.1002/2016WR019129'> Vogel & Farmer 2016 </a>.")),
                       helpText(h3("Development Team")),
                       helpText(h4("Lead developer")),
-                      helpText(HTML("Jason Hunter, PhD Candidate, School of Civil, Environmental and Mining Engineering, University of Adelaide (<a href='jason.hunter@adelaide.edu.au'>Email</a>)")),
+                      helpText(HTML("<a href= 'https://researchers.adelaide.edu.au/profile/jason.hunter'> Jason Hunter </a>, PhD Candidate, School of Civil, Environmental and Mining Engineering, University of Adelaide (<a href='jason.hunter@adelaide.edu.au'>Email</a>)")),
                       helpText(h4("Contributors")),
                       helpText(HTML("<a href='https://researchers.adelaide.edu.au/profile/mark.thyer'> Dr Mark Thyer </a>, Associate Professor in Water Resources Engineering, School of Civil, Environmental and Mining Engineering, University of Adelaide (<a href='mark.thyer@adelaide.edu.au'>Email</a>)")),
                       helpText(HTML("<a href = 'https://researchers.adelaide.edu.au/profile/david.mcinerney'> Dr David McInerney </a>, Senior Research Associate, School of Civil, Environmental and Mining Engineering, University of Adelaide (<a href='david.mcinerney@adelaide.edu.au'>Email</a>)")),
