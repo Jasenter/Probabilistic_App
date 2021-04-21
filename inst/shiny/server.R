@@ -1,6 +1,6 @@
 
 
-shinyServer(function(input, output, session) {
+shinyServer(function(input, output) {
 #
   # save variables for use across multiple functions
   vals=reactiveValues(
@@ -122,7 +122,6 @@ shinyServer(function(input, output, session) {
       #calc pred pls
       pred.pl = auxiliary(callfunction="calc.problim",pred.reps=pred.reps)
 
-      #updateSliderInput(session,"yRange",label= "Y range",value = c(0,ceiling(max(pred.pl,na.rm=TRUE))),step=5,min=0,max=ceiling(max(pred.pl,na.rm=TRUE)))
       incProgress(amount=0.6)
 
       #calculate Metrics
