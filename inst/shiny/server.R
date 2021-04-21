@@ -1,6 +1,6 @@
 
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
 #
   # save variables for use across multiple functions
   vals=reactiveValues(
@@ -226,8 +226,8 @@ shinyServer(function(input, output) {
     vals$out$pred.pl
     xmax=length(vals$out$data[vals$out$data.lab$obs][[1]])
     ymax = ceiling(max(vals$out$data[vals$out$data.lab$pred][[1]],na.rm=T))
-    updateSliderInput(inputId="datRange",max=xmax)
-    updateSliderInput(inputId="yRange",max=ymax,min=0,step=1.0)
+    updateSliderInput(session,inputId="datRange",max=xmax)
+    updateSliderInput(session,inputId="yRange",max=ymax,min=0,step=1.0)
     isolate({
       auxiliary(callfunction="plot.problim",data=vals$out$data,opt=vals$out$data.lab,pred.pl=vals$out$pred.pl,input=input)
       })
