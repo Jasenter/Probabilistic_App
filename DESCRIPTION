@@ -1,15 +1,19 @@
 Package: ProbPred
 Title: Probabilistic Predictions
-Version: 0.0.1
+Version: 1.0.0
+Date: 2021-04-27
 Authors@R: c(person("Jason","Hunter", email="jason.hunter@adelaide.edu.au",role=c("aut","cre")),
              person("Mark", "Thyer",email="mark.thyer@adelaide.edu.au",role=c("aut")),
              person("David", "McInerney", email="david.mcinerney@adelaide.edu.au",role=c("aut")),
              person("Dmitri","Kavetski", email="dmitri.kavetski@adelaide.edu.au",role=c("aut")),
              person("Bree","Bennett",email="bree.bennett@adelaide.edu.au",role=c("aut")))
 Description:ProbPred is a post-processed residual error model for generating probabilistic predictions from a users' observed and simulated hydrological streamflow data. It is presented as an R-function and as an interactive Shiny interface.
+Maintainer: Jason Hunter <jason.hunter@adelaide.edu.au>
 Depends: 
 Imports: 
-License: What license is it under?
+License: GPL-3.0
+URL: https://github.com/Jasenter/Probabilistic_App
+BugReports: https://github.com/Jasenter/Probabilistic_App/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
