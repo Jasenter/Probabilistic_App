@@ -1,6 +1,6 @@
 Package: ProbPred
 Title: Probabilistic Predictions
-Version: 1.0.0
+Version: 1.0.1
 Date: 2021-04-27
 Authors@R: c(person("Jason","Hunter", email="jason.hunter@adelaide.edu.au",role=c("aut","cre")),
              person("Mark", "Thyer",email="mark.thyer@adelaide.edu.au",role=c("aut")),

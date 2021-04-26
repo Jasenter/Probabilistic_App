@@ -57,18 +57,18 @@ shinyUI(
              tabPanel("Home",
                       helpText(h3("Features")),
                       helpText(HTML("<ul><li> Simple and easy to use interactive webapp for single site analysis </li></ul>")),
-                      helpText(HTML("<ul><li> Provides high quality probabilistic predictions that are robust to wide range of common objective functions </li></ul>")),
-                      helpText(HTML("<ul><li> Incorporates the latest research advances in residual error model selection to handle common features of predictive errors, see 'About/Help' </li></ul>")),
+                      helpText(HTML("<ul><li> Provides high quality probabilistic predictions that are robust to a wide range of common objective functions </li></ul>")),
+                      helpText(HTML("<ul><li> Incorporates the latest research advances in residual error model selection to handle common features of predictive errors, (see 'Help/About') </li></ul>")),
                       helpText(HTML("<ul><li> Evaluates predictive performance using a range of commonly used metrics and diagnostics </li></ul>")),
-                      helpText(HTML("<ul><li> Users simply to upload a time series of predictions and observations see 'Getting Started' </li></ul>")),
-                      helpText(HTML("<ul><li> Users can easily download time series of probabilistic predictions/probability limits and summary metrics </li></ul>")),
-                      helpText(HTML("<ul><li> Command-line functionality in R package provides opportunity for automated analysis of  large number of sites </li></ul>")),
+                      helpText(HTML("<ul><li> Users simply upload a time series of predictions and observations (see 'Getting Started') </li></ul>")),
+                      helpText(HTML("<ul><li> Users can easily download time series of probabilistic predictions, probability limits and summary metrics </li></ul>")),
+                      helpText(HTML("<ul><li> Command-line functionality in R package provides opportunity for automated analysis of a large number of sites </li></ul>")),
                       helpText(h3("Benefits")),
-                      helpText(HTML("<ul><li> Probabilistic predictions provide realistic estimates of water resource system risks - without uncertainty risks are under-estimated providing a false sense of security  </li></ul>")),
+                      helpText(HTML("<ul><li> Probabilistic predictions provide realistic estimates of water resource system risks - without uncertainty, risks are under-estimated providing a false sense of security  </li></ul>")),
                       img(src='benefitsimg.jpg',align='center',style='width: 70vw; min-width: 330px;'),
-                      helpText(HTML("<ul><li> Incorporating the uncertainty enables decisions makers with different attitudes to risk aversion to act differently if aware of the uncertainty </li></ul>")),
+                      helpText(HTML("<ul><li> Incorporating the uncertainty enables decision-makers with different attitudes to risk aversion to act differently if aware of the uncertainty </li></ul>")),
                       helpText(HTML("<ul><li> Encourages the modeller to think about the modelling processes and the quality of information used to inform decisions  </li></ul>")),
-                      helpText(HTML("<ul><li> Decision makers and the public have the 'right to know' all limitations of a design/analysis in order to make up their own minds and lobby for their individual causes </li></ul>")),
+                      helpText(HTML("<ul><li> Decision-makers and the public have the 'right to know' all limitations of a design/analysis in order to make up their own minds and lobby for their individual causes </li></ul>")),
                       helpText(HTML("Inspired by <a href='https://doi.org/10.1029/2005WR004820'> Pappenberger & Beven 2006 </a> and <a href = ' https://doi.org/10.1002/2016WR019129'> Vogel & Farmer 2016 </a>.")),
                       helpText(h3("Development Team")),
                       helpText(h4("Lead developer")),
@@ -86,7 +86,7 @@ shinyUI(
                       helpText(h3("1.   Prepare and upload data")),
                       helpText(HTML("<ul><li> Users need to calibrate their own hydrological model to streamflow 'observations' and use the model to generate streamflow 'predictions' for their catchment of interest </li></ul>")),
                       helpText(HTML("<ul><li> Prepare a data file (csv format) of the streamflow 'predictions' and 'observations' for upload to the webapp </li></ul>")),
-                      helpText(HTML("<ul><li> See 'Simulation|Input Data' for details  </li></ul>")),
+                      helpText(HTML("<ul><li> See 'Simulation | Input Data' for details and an example input file  </li></ul>")),
                       helpText(h3("2.   Evaluate and enhance predictive data")),
                       helpText(HTML("<p style='color:red'> Note: To view videos, please open the interface in the browser by clicking the option 'Open in Browser' at the top of the interface window </p>")),
                       helpText("Introduction to evaluating probabilistic predictions: What makes a good probabilistic prediction?"),
@@ -125,14 +125,14 @@ shinyUI(
                           
                           # INPUT DATA
                           fluidRow(
-                            column(5,radioButtons(inputId="dataSel",label="",choices=c("Use demo data","Load my own data"),selected="Use demo data",inline = TRUE))
+                            column(5,radioButtons(inputId="dataSel",label="",choices=c("Use demo data","Load my own data"),selected="Use demo data",inline = TRUE),
+                                   downloadLink('file2',label="data file example - use 'Open in Browser' at top of interface for easy viewing")) # downloads demo data from package
                           ),
                           fluidRow(
                             
                             conditionalPanel(condition = "input.dataSel == 'Load my own data'",
                                              column(3,
                                                     fileInput('file1',label="",accept=c('text/csv','text/comma-separated-values/plain','.csv')),
-                                                    downloadLink('file2',label="data file example - use 'Open in Browser' at top of interface for easy viewing"), # downloads demo data from package
                                                     textInput(inputId="lab.date",label="header of dates",value="date"),
                                                     textInput(inputId="lab.obs",label="header of observed data",value="obs"),
                                                     textInput(inputId="lab.pred",label="header of predicted data",value="pred"),
@@ -275,7 +275,7 @@ shinyUI(
                       helpText(h3("Help")),
                       helpText(HTML("Please report any bugs, issues or feature requests to <a href='https://github.com/Jasenter/Probabilistic_App/issues'> https://github.com/Jasenter/Probabilistic_App/issues </a>")),
                       helpText(h3("Licenses, Warranty and Disclaimer")),
-                      helpText("This open source project is provided under the GPLv3 license. Please see link for terms covering warranty, disclaimers, liability and use of this software."),
+                      helpText(HTML("This open source project is provided under the <a href='https://github.com/Jasenter/Probabilistic_App/blob/master/LICENSE'> GPLv3 license</a>. Please see link for terms covering warranty, disclaimers, liability and use of this software.")),
                       helpText(h3("References")),
                       helpText(h4("Residual error model development")),
                       helpText(HTML("Hunter, J., Thyer, M., McInerney, D. & Kavetski, D. 2020. Achieving high-quality probabilistic predictions from hydrological models calibrated with a wide range of objective functions. Journal of Hydrology, (submitted).")),
@@ -288,44 +288,6 @@ shinyUI(
                       helpText(HTML("McInerney, D., Thyer, M., Kavetski, D., Laugesen, R., Tuteja, N. & Kuczera, G. 2020. Multi-temporal hydrological residual error modeling for seamless subseasonal streamflow forecasting. <i> Water Resources Research </i>, vol. 56, no. 11, pp. 2019WR026979, DOI: <a href = 'https://doi.org/10.1029/2019WR026979'> 10.1029/2019WR026979 </a>")),
                       helpText(HTML("Woldemeskel, F., McInerney D., Lerat J., Thyer M., Kavetski D., Shin D., Tuteja N. & Kuczera G. 2018. Evaluating post-processing approaches for monthly and seasonal streamflow forecasts. <i> Hydrology and Earth System Sciences </i>, vol. 22, no. 12, pp. 6257-6278, DOI: <a href = 'https://doi.org/10.5194/hess-22-6257-2018'> 10.5194/hess-22-6257-2018 </a>"))
              )
-             
-             
-             # tabPanel("About",
-             #          helpText(h2("Interactive Probabilistic Predictions")),
-             #          helpText("This web-app produces probabilistic hydrological predictions using the LS-MoM method introduced in McInerney et al (2018)."),
-             #          helpText("The web-app assumes the user has already calibrated their hydrological model using their preferred software and an acceptable objective function (see below). This is referred to as 'Stage 1' of the calibration.") ,
-             #          helpText("The user should upload the observed and calibrated streamflow time series and the associated dates of measurement (daily timestep), and specify the Box Cox transformation parameters (lambda and A*) and the preferred mean structure. If the mean structure is either 'zero' or 'constant', we recommend that the Box-Cox transformation parameters match the values that were used in the hydrological objective function."),
-             #          helpText("The web-app will then estimate the residual error model parameters (referred to as 'Stage 2') and generate probabilistic predictions in the form of streamflow time series and associated 50% and 90% prediction limits. A selection of metrics and diagnostics from Evin et al (2014) and McInerney et al (2017) will be provided."),
-             #          #helpText(h3("Objective functions")),
-             #          #helpText("The web-app assumes a least-squares objective function, e.g. the sum-of-squared-errors (SSE) or equivalent Nash-Sutcliffe efficiency (NSE), computed from Box-Cox transformed flows (McInerney et al, 2017)."),
-             #          #helpText("These include widely used objective functions such as the NSE (lambda=1, A*=0), the NSE on square-root transformed flows (lambda=0.5, A*=0) and the NSE on log-transformed flows (lambda=0, A*=0). "),
-             #          helpText(h3("Demonstration data")),
-             #          helpText("By default, loading up the web-app for the first time will display probabilistic streamflow predictions for the Yackandandah Creek catchment (Australia), obtained from the GR4J rainfall-runoff model and pre-calibrated to the NSE objective function in one version, and the NSE-BC02 objective function in the other."),
-             #          helpText(h3("Uploading your own data")),
-             #          helpText("To upload your own data, create a CSV file with three columns corresponding to the daily timestep in format (DD/MM/YYYY), observed data and simulated data."),
-             #          #helpText(HTML("Download the demo data file to see the required format: <a href='http://www.algorithmik.org.au/dat/demoData.csv'> demo data file </a>.")),
-             #
-             #          helpText(h3("Further information")),
-             #          helpText(HTML("Further information on the importance probabilistic predictions in hydrology, and methods for   generating these predictions, can be found on the
-             #                        <a href='http://waterdecisions.org/reducing-hydrological-uncertainty/'> Intelligent Water Decisions Blog </a> and
-             #                        <a href='https://www.youtube.com/watch?v=mvuYlyF6S4s'> this talk</a> at the 2016 DEWNR NRM Science Conference. ")),
-             #
-             #
-             #          helpText(h3("Contact us")),
-             #          helpText(HTML("Contact <a href='mailto:jason.hunter@adelaide.edu.au'> Jason Hunter </a>
-             #                        for further details on how to use the web-app, the methods used for generating probabilistic predictions, and the diagnostics and performance metrics. ")),
-             #          helpText(HTML(" ")),
-             #          helpText(h3("References")),
-             #          helpText(HTML("Evin, G., Thyer, M., Kavetski, D., McInerney, D., & Kuczera, G. (2014). Comparison of joint versus postprocessor approaches for hydrological uncertainty estimation accounting for error autocorrelation and heteroscedasticity. Water Resources Research, 50(3), 2350-2375,
-             #                        <a href='https://doi.org/10.1002/2013WR014185'> DOI: 10.1002/2013WR014185</a>.")),
-             #          helpText(HTML("McInerney, D., Thyer, M., Kavetski, D., Bennett, B., Gibbs, M. & Kuczera, G. (2018). A simplified approach to produce probabilistic hydrological model predictions. Environmental Modelling and Software,
-             #                        <a href='https://doi.org/10.1016/j.envsoft.2018.07.001'> DOI: 10.1016/j.envsoft.2018.07.001</a>. ")),
-             #          helpText(HTML("McInerney, D., Thyer, M., Kavetski, D., Lerat, J., & Kuczera, G. (2017). Improving probabilistic prediction of daily streamflow by identifying Pareto optimal approaches for modeling heteroscedastic residual errors. Water Resources Research, 53(3), 2199-2239,
-             #                        <a href='https://doi.org/10.1002/2016WR019168'> DOI: 10.1002/2016WR019168</a>.")),
-             #          helpText(HTML("Hunter, J., Thyer, M., McInerney, D., Kavetski, D. (2020). Achieving high-quality probabilistic predictions from hydrological models calibrated with a wide range of objective functions. Journal of Hydrology, (submitted)."))
-             #
-             #
-             #          )
              
              
              
