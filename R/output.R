@@ -1,6 +1,11 @@
-### Ranking the catchment's metrics wrt HRS metrics
-# HRS data  These are the medians and the upper & lower (66th &33rd respectively) quantiles
-# quantiles taken from the linear mean, NSE objective function, BC02 error model
+# Designs the front page of the output pdf
+# Ranking the catchment's metrics wrt HRS metrics
+# HRS data are the medians and the upper & lower (66th &33rd respectively) quantiles
+# quantiles are taken from the linear mean, NSE objective function, BC02 error model
+
+#######################################
+## ranking the catchment wrt HRS
+
 rankHRS = function(metrics,dir.loc) {
   # HRS catchment rankings
   good = c(0.056, 0.364, 0.033) # 25th quantiles
@@ -32,11 +37,13 @@ rankHRS = function(metrics,dir.loc) {
     met[i] = round(metrics[[i]],digits=3) # round now that the calculations with it are done
   }
   met.table = data.frame(met,rankVector.text,rank)
+  
   return(met.table)
 }
-##############################################################
 
-##############################################################
+#######################################
+## Writing the parameters
+
 # Writing parameters & metrics
 output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc="") {
   layout(mat=matrix(c(1,1,
@@ -58,7 +65,6 @@ output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc=""
   abline(v=(1.5:2.5))
   abline(h=(1.5:2.5))
 
-
 # Parameters
   param.round = c(round(param$A,3),round(param$lambda,3),round(param$mean_eta_0,3),round(param$mean_eta_1,3),round(param$rho,3),round(param$sigma_y,3))
   plot(NA,xlim=c(1,2),ylim=c(0.75,6.25),xaxt="n",yaxt="n",xlab="",ylab="",main="Parameters")
@@ -76,7 +82,6 @@ output.main=function(param,metrics,msg.print=NA,data=NA,is.data=T,opt,dir.loc=""
 
 }
 
-##############################################################
 
 
 

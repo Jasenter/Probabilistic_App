@@ -7,8 +7,7 @@
 #' @examples
 #' none          ## no example - this script is not for the user; it is for the webapp - and webapps need no examples
 
-
-################################
+#######################################
 ## Data check error messages
 
 xerr = function(flag) {
@@ -43,9 +42,10 @@ xerr = function(flag) {
   }
 
 }
-#################################
 
-#################################
+#######################################
+## Printing errors
+
 error = function(msgFlag,num=NA) {
 
 
@@ -86,12 +86,14 @@ error = function(msgFlag,num=NA) {
                             "  mm/d, m3/s or ML/d are recommended.",
                             "  Units assumed to be millimetres per day (mmd).",
                             sep="\n")
-}
+  }
+  
   return(msg.print.error)
 
 }
-##################################################################
-# Suite of tests on the data's suitability for predicting
+#######################################
+## Suite of tests on the data's suitability for predicting
+## Some errors currently commented pending team decision
 
 error.print = function(data,opt) {
   msg.print = vector(length=2)

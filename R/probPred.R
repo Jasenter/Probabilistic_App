@@ -38,7 +38,9 @@
 
 probPred = function(data,opt,param) {
 
-
+#######################################
+## Loading dependent packages
+  
   x="moments" %in% rownames(installed.packages())
   if(!x) {install.packages("moments",lib=.libPaths())}
   library("moments")
@@ -51,8 +53,8 @@ probPred = function(data,opt,param) {
   if(!x) {install.packages("shinythemes",lib=.libPaths())}
   library("shinythemes")
 
-  #######################################
-  ## Inputs
+#######################################
+## Inputs & parameters
 
   reps = opt$reps
   title = opt$title
@@ -61,16 +63,16 @@ probPred = function(data,opt,param) {
   setwd(opt$dirname)
   data_dirname = system.file("shiny",package="ProbPred")
 
-  #######################################
-
-  # set error model params
   heteroModel = 'BC'
 
   paramFix = list(A=param$A,lambda=param$lambda)
   meantype = opt$meantype
+  
+  calc_rho = T # Always calculate Rho
 
-
-  ## Error checks on the input data
+#######################################
+## Error checks on the input data
+  
   data.headers = colnames(data)
 
   if(!is.element(opt$obs,data.headers) |
@@ -94,75 +96,83 @@ probPred = function(data,opt,param) {
     return()
   }
 
+  # set missing data to 'NA' - important for plotting
   data[[opt$obs]][data[[opt$obs]]<0 | is.infinite(data[[opt$obs]]) | is.nan(data[[opt$obs]])] = NA
   data[[opt$pred]][data[[opt$pred]]<0 | is.infinite(data[[opt$pred]]) | is.nan(data[[opt$pred]])] = NA
 
-
-  calc_rho = T # Always calculate Rho
-
-  ######################################
-
-
+######################################
+## Calculations
+  
   # calc parameters
   param = calibrate_hetero(data=data,param=paramFix,heteroModel=heteroModel,calc_rho=T,meantype=meantype,opt=opt)
 
   # calc eta_star
   std.resids = calc_std_resids(data=data,param=param,heteroModel=heteroModel,opt=opt)
-
   print("Starting calculation of probabilistic replicates...")
-  # calc pred reps
+  
+  # calc predictive replicates
   pred.reps = calc_pred_reps(Qh=data[[opt$pred]],heteroModel=heteroModel,param=param,nReps=reps,Qmin=0.,Qmax=999.,truncType='spike')
 
-  # print replicates
-
+  # calc probability limits
   pred.pl = calc.problim(pred.reps,percentiles=c(0.05,0.25,0.5,0.75,0.95))
+  print("Starting calculation of metrics...")
+  
+  # generating metrics (reliability, precision, bias)
+  metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
+  print("Printing to pdf...")
 
-   print("Starting calculation of metrics...")
- # generating metrics (reliability, precision, bias)
-   metrics = calc_metrics(data=data,pred.reps=pred.reps,opt=opt)
+  # opening pdf 
+  pdf(paste(title,"_Summary.pdf",sep=""))
 
-   print("Printing to pdf...")
-
-   pdf(paste(title,"_Summary.pdf",sep=""))
-#
-
-   output.main(param=param,metrics=metrics,data=data,is.data=T,opt=opt,dir.loc=data_dirname) # printing new front page
+######################################
+## Printing plots to pdf
+  
+  # Front page
+  output.main(param=param,metrics=metrics,data=data,is.data=T,opt=opt,dir.loc=data_dirname) 
+  
   # Boxplots
-   boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$reliability,metric="reliability",boxColour="pink")
-   boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$sharpness,metric="sharpness",boxColour="white")
-   boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$bias,metric="bias",boxColour="lightblue")
-   #
-   plot.performance(data=data,pred.reps=pred.reps,type='PQQ',opt=opt)
-   #
-   plot.residuals(data=data,std.resids=std.resids,type='pred',opt=opt)
-   #
-   plot.residuals(data=data,std.resids=std.resids,type='prob(pred)',opt=opt)
-   #
-   plot.residuals(data=data,std.resids=std.resids,type='density',opt=opt)
-   #
-   tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt)
-   #
-
-   ## Prints auto & partial correlation plots
-   #if (!is.na(min(data[[opt$obs]])) && !is.na(min(data[[opt$pred]]))) {
-     #acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel,opt=opt)
-     #acfplotter(data=data,acfType='pacf',param=param,heteroModel=heteroModel,opt=opt)
-   #}
-   # Timeseries
-   timeseries(data=data,pred.reps=pred.reps,opt=opt)
-   #
+  boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$reliability,metric="reliability",boxColour="pink")
+  boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$sharpness,metric="sharpness",boxColour="white")
+  boxplotter(data_dirname=data_dirname,catchmentMetric=metrics$bias,metric="bias",boxColour="lightblue")
+   
+  # PQQ plot
+  plot.performance(data=data,pred.reps=pred.reps,type='PQQ',opt=opt)
+   
+  # Residual plot #1
+  plot.residuals(data=data,std.resids=std.resids,type='pred',opt=opt)
+   
+  # Residual plot #2
+  plot.residuals(data=data,std.resids=std.resids,type='prob(pred)',opt=opt)
+   
+  # Density plot
+  plot.residuals(data=data,std.resids=std.resids,type='density',opt=opt)
+   
+  # standardised residual plot
+  tranzplotter(data=data,param=param,heteroModel=heteroModel,add.legend=T,add.title=T,opt=opt)
 
 
+  # auto & partial correlation plots - temporarily unable to handle missing data
+  #if (!is.na(min(data[[opt$obs]])) && !is.na(min(data[[opt$pred]]))) {
+    #acfplotter(data=data,acfType='acf',param=param,heteroModel=heteroModel,opt=opt)
+    #acfplotter(data=data,acfType='pacf',param=param,heteroModel=heteroModel,opt=opt)
+  #}
+  
+  # Timeseries
+  timeseries(data=data,pred.reps=pred.reps,opt=opt)
+  
+  # terminate PDF
+  dev.off()
+  
+######################################
+## Printing .csv
 
-   dev.off() # terminate PDF
-
-   if(opt$repPrint==T) { # Print out a .csv with the replicates in it
-     write.csv(x=pred.reps,file=paste(title,"_replicates.csv",sep=""))
-   }
-   if(opt$plPrint==T) { # Print out a .csv with the probability limits in it
-     write.csv(x=pred.pl,file=paste(title,"_probLimits.csv",sep=""))
-   }
-   print("Run complete!  Please check directory for output files.")
+  if(opt$repPrint==T) { # Print out a .csv with the replicates in it
+    write.csv(x=pred.reps,file=paste(title,"_replicates.csv",sep=""))
+  }
+  if(opt$plPrint==T) { # Print out a .csv with the probability limits in it
+    write.csv(x=pred.pl,file=paste(title,"_probLimits.csv",sep=""))
+  }
+  print("Run complete!  Please check directory for output files.")
 }
 
 

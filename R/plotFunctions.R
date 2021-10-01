@@ -1,4 +1,8 @@
-############################################################################
+# plotFunctions.R 
+# Lists plotting functions
+
+#######################################
+## PQQ plots
 
 plot.performance = function(data,pred.reps,type,opt,...){
   if (type == 'PQQ'){
@@ -6,14 +10,17 @@ plot.performance = function(data,pred.reps,type,opt,...){
   }
 }
 
-############################################################################
+#######################################
+## residual plots (density, scatter)
 
 plot.residuals = function(data,std.resids,type,model,param,opt,xlab=NULL,ylab=NULL,...){
+  
   if (type == 'prob(pred)'){
     if (is.null(ylab)){ylab='Standardised residuals'}
     plot.residuals.multi(residuals=std.resids,pred=data[[opt$pred]],
                          plot.type=type, resid.outlier.thres = c(NA),
                          ylab=ylab,xaxs='i',yaxs='i',...)
+    
     } else if (type == 'pred'){
       if (is.null(ylab)){ylab='Standardised residuals'}
       plot.residuals.multi(residuals=std.resids,pred=data[[opt$pred]],
@@ -44,10 +51,10 @@ plot.residuals = function(data,std.resids,type,model,param,opt,xlab=NULL,ylab=NU
 
 }
 
-############################################################################
+#######################################
+## boxplots
 
 boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
-  #
 
   ## Opening Robject with HRS metrics
   RData_fname = paste(data_dirname,"/",metric,'.RData',sep='')
@@ -59,6 +66,7 @@ boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
   xrow = 0.41
   txtoffset = (ylim.max)*0.05
   par(mfrow=c(1,1),oma=c(0,0,0,0),mar=c(4,4,4,4))
+  
   # Plotting
   boxplot.ext(xin=get(HRSlab), ylim=c(0,ylim.max),
               colouring = boxColour,xaxt="n",ylab=c(""))
@@ -72,8 +80,10 @@ boxplotter = function(data_dirname="",catchmentMetric,metric,boxColour) {
   axis(side=4,at=c(0.0,ylim.max),labels=c("better","worse"),las=2)
 
 }
-############################################################################
-############################################################################
+
+#######################################
+## timeseries
+
 timeseries = function(data,pred.reps,opt) {
 
   nlen = length(data[[opt$obs]])
@@ -100,8 +110,10 @@ timeseries = function(data,pred.reps,opt) {
     lines(data$pred,col="black",lwd=2)
   }
 }
-############################################################################
-############################################################################
+
+#######################################
+## standardised residual plots
+
 tranzplotter = function(data,param,metFlag=c(T,T,T,T,T),heteroModel,add.legend=F,add.title=F,opt) { # standardised residuals against transformed streamflow
 
   eta = calc_eta(Qobs=data[[opt$obs]],Qh=data[[opt$pred]],param=param,heteroModel=heteroModel) # transformed residuals
@@ -121,8 +133,10 @@ tranzplotter = function(data,param,metFlag=c(T,T,T,T,T),heteroModel,add.legend=F
   }
 
 }
-############################################################################
-############################################################################
+
+#######################################
+## auto & partial correlation plots
+
 acfplotter = function(data,acfType,param,heteroModel,opt) { # standardised residuals against transformed streamflow
 
   y=calc_innovations(data,param,heteroModel,opt)

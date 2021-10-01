@@ -1,4 +1,8 @@
-############################################################################
+# predictFunctions.R 
+# Predictive and back-transformation functions
+
+#######################################
+## back-transformation from Box-Cox transformed predictions
 
 calc_BC_pred_from_eta = function(Qh,A,lambda,eta,Qmin=0.,Qmax=999.,truncType='spike'){
 
@@ -32,7 +36,8 @@ calc_BC_pred_from_eta = function(Qh,A,lambda,eta,Qmin=0.,Qmax=999.,truncType='sp
   return(pred)
 }
 
-############################################################################
+#######################################
+## back-transformation from WLS predictions
 
 calc_WLS_pred_from_eta = function(Qh,A,eta,Qmin=0.,Qmax=999.,truncType='spike'){
   pred = Qh + eta*(Qh+A)
@@ -46,7 +51,8 @@ calc_WLS_pred_from_eta = function(Qh,A,eta,Qmin=0.,Qmax=999.,truncType='spike'){
   return(pred)
 }
 
-############################################################################
+#######################################
+## back-transformation from LogSinh predictions
 
 calc_LogSinh_pred_from_eta = function(Qh,A,B,eta,Qmin=0.,Qmax=999.,truncType='spike'){
   Y = eta + calc_LogSinh_tranz(Q=Qh,A=A,B=B)
@@ -61,7 +67,8 @@ calc_LogSinh_pred_from_eta = function(Qh,A,B,eta,Qmin=0.,Qmax=999.,truncType='sp
   return(pred)
 }
 
-############################################################################
+#######################################
+## Select back-transformation function
 
 calc_pred_from_eta = function(Qh,heteroModel,param,eta,Qmin=0.,Qmax=999.,truncType='spike'){
 
@@ -92,7 +99,8 @@ calc_pred_from_eta = function(Qh,heteroModel,param,eta,Qmin=0.,Qmax=999.,truncTy
   return(pred)
 }
 
-############################################################################
+#######################################
+## calculate innovations
 
 sim_AR1 = function(nT,mu,sigma,rho){
   eta = vector(length = nT)
@@ -116,7 +124,8 @@ sim_AR1 = function(nT,mu,sigma,rho){
   return(eta)
 }
 
-############################################################################
+#######################################
+## generate replicates
 
 calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,truncType='spike',validate=F){
   nT = length(Qh)
@@ -140,14 +149,12 @@ calc_pred_reps = function(Qh,heteroModel,param,nReps=1e2,Qmin=0.,Qmax=999.,trunc
     for (r in 1:nReps){
       eta = sim_AR1(nT,mu=mean_eta,sigma=sigma_eta,rho=rho_eta)
 
-
       predReps[,r] = calc_pred_from_eta(Qh=Qh,heteroModel=heteroModel,param=param,
                                         eta=eta,Qmin=Qmin,Qmax=Qmax,truncType=truncType)
     }
 
     if (nReps==1){predReps=predReps[,1]}
   colnames(predReps)=paste("rep",seq(1:nReps),sep="")
+  
     return(predReps)
 }
-
-############################################################################

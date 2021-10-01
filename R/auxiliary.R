@@ -18,7 +18,7 @@
 #' @keywords none
 #' @export
 #' @examples
-#' none          ## no example - this script is not for the user; it is for the webapp
+#' none          ## no example - this script is not for the user; it is for the Shiny interface
 
 
 
@@ -90,14 +90,5 @@ auxiliary = function(callfunction,data=NULL,opt=NULL,param=NULL,pred.reps=NULL,h
 
 
   }
-
-
-
-
-
-
-
-
-
 
 }

@@ -1,4 +1,5 @@
-#############################
+# calcClim.R 
+# Base predictions for climatological precision
 
 calc_ClimDaily_dayOfYearWindow_seamless = function(QobsCal,datesCal,datesClim=NULL,inc=14){
 
@@ -44,4 +45,4 @@ calc_ClimDaily_dayOfYearWindow_seamless = function(QobsCal,datesCal,datesClim=NU
 
 }
 
-######################
+

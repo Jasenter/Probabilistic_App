@@ -1,4 +1,8 @@
-############################################################################
+# Tranzfunctions.R 
+# Contains data transformation functions
+
+#######################################
+## Box-Cox transformation
 
 calc_BC_tranz = function(Q,A,lambda,returnJac=F){
   if (lambda==0){
@@ -15,7 +19,8 @@ calc_BC_tranz = function(Q,A,lambda,returnJac=F){
   }
 }
 
-############################################################################
+#######################################
+## Weighted-Least-Squares transformation
 
 calc_WLS_tranz = function(Q,Qh,A,returnJac=F){
   Z = Q/(Qh+A)
@@ -27,7 +32,8 @@ calc_WLS_tranz = function(Q,Qh,A,returnJac=F){
   }
 }
 
-############################################################################
+#######################################
+## LogSinh transformation
 
 calc_LogSinh_tranz = function(Q,A,B,returnJac=F){
 
@@ -39,14 +45,17 @@ calc_LogSinh_tranz = function(Q,A,B,returnJac=F){
   }
 }
 
-############################################################################
+#######################################
+## Inverse LogSinh transformation
 
 calc_inv_LogSinh_tranz = function(Y,A,B){
   Z_inv = B*asinh(exp(Y/B))-A
+  
   return(Z_inv)
 }
 
-############################################################################
+#######################################
+## Selecting transformation function to use
 
 calc_tranz = function(Q,Qh=NULL,heteroModel='BC',param,returnJac=F){
 
@@ -64,7 +73,8 @@ calc_tranz = function(Q,Qh=NULL,heteroModel='BC',param,returnJac=F){
       Z = calc_WLS_tranz(Q=Q,Qh=Qh,A=param['A'],returnJac=returnJac)
     }
   }
+  
   return(Z)
 }
 
-############################################################################
+

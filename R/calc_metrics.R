@@ -1,4 +1,8 @@
+# calc_metrics.R
+# Metric calculations
 
+#######################################
+## Reliability
 
 PQQ_alpha = function(obs,pred.reps,perturb=F){
 
@@ -23,8 +27,8 @@ PQQ_alpha = function(obs,pred.reps,perturb=F){
 
 }
 
-################
-
+#######################################
+## Sharpness (climatological precision)
 
 sharpness = function(pred.reps,pred.reps.base=NULL) {
   if (!is.null(pred.reps.base)){
@@ -45,7 +49,8 @@ sharpness = function(pred.reps,pred.reps.base=NULL) {
   return(IQR90_mod)
 }
 
-################
+#######################################
+## Absolute bias
 
 abs_bias_prob =  function(obs,pred){
   mean.obs = mean(obs,na.rm=T)
@@ -55,7 +60,9 @@ abs_bias_prob =  function(obs,pred){
   return(bias)
 
 }
-################
+
+#######################################
+## calls metrics
 
 calc_metrics = function(data,pred.reps,opt){
   reliability = PQQ_alpha(obs=data[[opt$obs]],pred.reps=pred.reps,perturb=T)

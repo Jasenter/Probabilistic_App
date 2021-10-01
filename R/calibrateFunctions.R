@@ -1,6 +1,8 @@
+# calibrateFunctions.R 
+# Calibrates the model
 
-
-############################################################################
+#######################################
+## calibrate model parameters (call)
 
 calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meantype,opt){
 
@@ -23,11 +25,12 @@ calibrate_hetero = function(data,param,heteroModel,method='MoM',calc_rho=F,meant
     print("Invalid method selected - use MoM only")
     browser()
   }
+  
   return(param)
 }
 
-
-############################################################################
+#######################################
+## calibrate AR1 parameters
 
 AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
 
@@ -53,7 +56,7 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
   nlen = length(eta)
   mu = mu0+mu1*Qh
   eta.star = eta-mu
-  s = sqrt((sum((eta.star)^2,na.rm=T))/n)
+  s = sqrt((sum((eta.star)^2,na.rm=T))/n) # sigmaEta
 
   if (calc_rho){
 
@@ -62,14 +65,12 @@ AR1_MoM = function(eta,Qh=NULL,calc_rho=F,meantype){
     sb = sqrt((sum((ErrorlagBackward)^2,na.rm=T))/n)
     sf = sqrt((sum((ErrorlagForward)^2,na.rm=T))/n)
 
-    rho = (sum((ErrorlagForward)*(ErrorlagBackward),na.rm=T))/((n-1)*sb*sf)
+    rho = (sum((ErrorlagForward)*(ErrorlagBackward),na.rm=T))/((n-1)*sb*sf) # autocorrelation
 
   } else {
     rho = 0.
   }
   sigma = sqrt((s^2)*(1-(rho^2))) # sigmaY
+  
   return(list(mu0=mu0,mu1=mu1,rho=rho,sigma=sigma,mu=mu))
 }
-
-
-############################################################################
