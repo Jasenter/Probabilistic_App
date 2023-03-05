@@ -1,3 +1,7 @@
+NOTE: Jasenter/Probablistic_App is no longer being supported. Please contact Mark Thyer (mark.thyer@adelaide.edu.au) for information on any future releases. This repository is archived.
+
+
+
 ProbPred is a post-processed residual error model for generating probabilistic predictions from a users' observed and simulated hydrological streamflow data. It is presented as an R-function and as an interactive Shiny interface. 
 
 To use the model, please download the latest release package and install it into your R library.
@@ -26,8 +30,6 @@ probPred(data,opt,param)
 + 'param' are the fixed input parameters from literature.
 
 For more information regarding the inputs and outputs of the model, please refer to the help files of the individual functions.
-
-Please log any bugs or issues at https://github.com/Jasenter/Probabilistic_App/ and direct any comments or feedback to  jason.hunter@adelaide.edu.au.
 
 #### Versions
 ProbPred release version 1.0.0 is optimised for:
